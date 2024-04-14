@@ -1,0 +1,1100 @@
+[
+    {
+        "id": "c3cbf231de665554",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "59ba7567e3379b0d",
+        "type": "mqtt-broker",
+        "name": "",
+        "broker": "b37.mqtt.one",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "cf2ec7fa21d955bd",
+        "type": "ui_base",
+        "theme": {
+            "name": "theme-light",
+            "lightTheme": {
+                "default": "#0094CE",
+                "baseColor": "#0094CE",
+                "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif",
+                "edited": true,
+                "reset": false
+            },
+            "darkTheme": {
+                "default": "#097479",
+                "baseColor": "#097479",
+                "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif",
+                "edited": true,
+                "reset": false
+            },
+            "customTheme": {
+                "name": "Untitled Theme 1",
+                "default": "#4B7930",
+                "baseColor": "#4B7930",
+                "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif"
+            },
+            "themeState": {
+                "base-color": {
+                    "default": "#0094CE",
+                    "value": "#0094CE",
+                    "edited": true
+                },
+                "page-titlebar-backgroundColor": {
+                    "value": "#0094CE",
+                    "edited": false
+                },
+                "page-backgroundColor": {
+                    "value": "#fafafa",
+                    "edited": false
+                },
+                "page-sidebar-backgroundColor": {
+                    "value": "#ffffff",
+                    "edited": false
+                },
+                "group-textColor": {
+                    "value": "#1bbfff",
+                    "edited": false
+                },
+                "group-borderColor": {
+                    "value": "#ffffff",
+                    "edited": false
+                },
+                "group-backgroundColor": {
+                    "value": "#ffffff",
+                    "edited": false
+                },
+                "widget-textColor": {
+                    "value": "#111111",
+                    "edited": false
+                },
+                "widget-backgroundColor": {
+                    "value": "#0094ce",
+                    "edited": false
+                },
+                "widget-borderColor": {
+                    "value": "#ffffff",
+                    "edited": false
+                },
+                "base-font": {
+                    "value": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif"
+                }
+            },
+            "angularTheme": {
+                "primary": "indigo",
+                "accents": "blue",
+                "warn": "red",
+                "background": "grey",
+                "palette": "light"
+            }
+        },
+        "site": {
+            "name": "Node-RED Dashboard",
+            "hideToolbar": "false",
+            "allowSwipe": "false",
+            "lockMenu": "false",
+            "allowTempTheme": "true",
+            "dateFormat": "DD/MM/YYYY",
+            "sizes": {
+                "sx": 48,
+                "sy": 48,
+                "gx": 6,
+                "gy": 6,
+                "cx": 6,
+                "cy": 6,
+                "px": 0,
+                "py": 0
+            }
+        }
+    },
+    {
+        "id": "8d7d3433d07c904d",
+        "type": "ui_tab",
+        "name": "Applications and Computation for the Internet of Things",
+        "icon": "dashboard",
+        "order": 1,
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "57c95d82f8b6e821",
+        "type": "ui_group",
+        "name": "Sensor Node 01",
+        "tab": "8d7d3433d07c904d",
+        "order": 1,
+        "disp": true,
+        "width": 8,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "db05b805d77aca2a",
+        "type": "ui_group",
+        "name": "Sensor Node 02",
+        "tab": "8d7d3433d07c904d",
+        "order": 2,
+        "disp": true,
+        "width": 8,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "cc80061e13c99f6e",
+        "type": "ui_group",
+        "name": "Sensor Node 03",
+        "tab": "8d7d3433d07c904d",
+        "order": 3,
+        "disp": true,
+        "width": 8,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "2bb35c451015f4bf",
+        "type": "ui_group",
+        "name": "Sensor Node 04",
+        "tab": "8d7d3433d07c904d",
+        "order": 4,
+        "disp": true,
+        "width": 8,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "3f6f29156193ec9d",
+        "type": "ui_spacer",
+        "z": "c3cbf231de665554",
+        "name": "spacer",
+        "group": "2e8f79a0fb96ba46",
+        "order": 3,
+        "width": 4,
+        "height": 1
+    },
+    {
+        "id": "74560521309d3ccf",
+        "type": "ui_spacer",
+        "z": "c3cbf231de665554",
+        "name": "spacer",
+        "group": "2e8f79a0fb96ba46",
+        "order": 5,
+        "width": 4,
+        "height": 1
+    },
+    {
+        "id": "e9761fa57a66996c",
+        "type": "ui_spacer",
+        "z": "c3cbf231de665554",
+        "name": "spacer",
+        "group": "2e8f79a0fb96ba46",
+        "order": 7,
+        "width": 4,
+        "height": 1
+    },
+    {
+        "id": "e5922190928d13c3",
+        "type": "ui_group",
+        "name": "Network Status",
+        "tab": "8d7d3433d07c904d",
+        "order": 5,
+        "disp": true,
+        "width": "16",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "001a4f87a3d92922",
+        "type": "mqtt in",
+        "z": "c3cbf231de665554",
+        "name": "",
+        "topic": "29adpt5613/home",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "59ba7567e3379b0d",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 370,
+        "y": 540,
+        "wires": [
+            [
+                "9ede17af4febdbf3",
+                "1e460769578da2a7",
+                "80f9ada9b03ab904",
+                "7848b40b514a3117",
+                "6abc5f8dd4e3c373",
+                "33fa47f2dd70f265",
+                "822b5e4fe96ba47f",
+                "cf14449f6c37743d",
+                "27c1abf43ac1d0c1"
+            ]
+        ]
+    },
+    {
+        "id": "c8d10c48d1c7779c",
+        "type": "ui_chart",
+        "z": "c3cbf231de665554",
+        "name": "",
+        "group": "57c95d82f8b6e821",
+        "order": 3,
+        "width": 4,
+        "height": 4,
+        "label": "",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "100",
+        "removeOlder": "60",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "60",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 830,
+        "y": 220,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "9ede17af4febdbf3",
+        "type": "function",
+        "z": "c3cbf231de665554",
+        "name": "Temperature function",
+        "func": "var parts = msg.payload.split(',');\nvar temperaturePart = parts.find(part => part.trim().startsWith('Temp'));\nvar temperature = parseFloat(temperaturePart.split(':')[1].trim());\n\nmsg.payload = temperature;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 640,
+        "y": 220,
+        "wires": [
+            [
+                "c8d10c48d1c7779c",
+                "51e7c219d08ca6be"
+            ]
+        ]
+    },
+    {
+        "id": "62e442946b0a523c",
+        "type": "ui_chart",
+        "z": "c3cbf231de665554",
+        "name": "",
+        "group": "57c95d82f8b6e821",
+        "order": 4,
+        "width": 4,
+        "height": 4,
+        "label": "",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "1024",
+        "removeOlder": "60",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "60",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 830,
+        "y": 280,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "1e460769578da2a7",
+        "type": "function",
+        "z": "c3cbf231de665554",
+        "name": "Light function",
+        "func": "var parts = msg.payload.split(',');\nvar temperaturePart = parts.find(part => part.trim().startsWith('Light'));\nvar temperature = parseFloat(temperaturePart.split(':')[1].trim());\n\nmsg.payload = temperature;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 610,
+        "y": 280,
+        "wires": [
+            [
+                "62e442946b0a523c",
+                "4d3d630ae6bc750a"
+            ]
+        ]
+    },
+    {
+        "id": "d0d62c96121a8a85",
+        "type": "ui_chart",
+        "z": "c3cbf231de665554",
+        "name": "",
+        "group": "db05b805d77aca2a",
+        "order": 3,
+        "width": 4,
+        "height": 4,
+        "label": "",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "100",
+        "removeOlder": "60",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "60",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 890,
+        "y": 340,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "80f9ada9b03ab904",
+        "type": "function",
+        "z": "c3cbf231de665554",
+        "name": "Temperature function",
+        "func": "var parts = msg.payload.split(',');\nvar temperaturePart = parts.find(part => part.trim().startsWith('Temp'));\nvar temperature = parseFloat(temperaturePart.split(':')[1].trim());\n\nmsg.payload = temperature;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 640,
+        "y": 360,
+        "wires": [
+            [
+                "d0d62c96121a8a85",
+                "9c535705bcc5db11"
+            ]
+        ]
+    },
+    {
+        "id": "c0dca0f9f1e93cad",
+        "type": "ui_chart",
+        "z": "c3cbf231de665554",
+        "name": "",
+        "group": "db05b805d77aca2a",
+        "order": 4,
+        "width": 4,
+        "height": 4,
+        "label": "",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "1024",
+        "removeOlder": "60",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "60",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 830,
+        "y": 420,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "7848b40b514a3117",
+        "type": "function",
+        "z": "c3cbf231de665554",
+        "name": "Light function",
+        "func": "var parts = msg.payload.split(',');\nvar temperaturePart = parts.find(part => part.trim().startsWith('Light'));\nvar temperature = parseFloat(temperaturePart.split(':')[1].trim());\n\nmsg.payload = temperature;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 610,
+        "y": 420,
+        "wires": [
+            [
+                "c0dca0f9f1e93cad",
+                "ba3378610f0dfd13"
+            ]
+        ]
+    },
+    {
+        "id": "ece14971c6d7177a",
+        "type": "ui_chart",
+        "z": "c3cbf231de665554",
+        "name": "",
+        "group": "cc80061e13c99f6e",
+        "order": 3,
+        "width": 4,
+        "height": 4,
+        "label": "",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "100",
+        "removeOlder": "60",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "60",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 830,
+        "y": 500,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "6abc5f8dd4e3c373",
+        "type": "function",
+        "z": "c3cbf231de665554",
+        "name": "Temperature function",
+        "func": "var parts = msg.payload.split(',');\nvar temperaturePart = parts.find(part => part.trim().startsWith('Temp'));\nvar temperature = parseFloat(temperaturePart.split(':')[1].trim());\n\nmsg.payload = temperature;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 640,
+        "y": 500,
+        "wires": [
+            [
+                "ece14971c6d7177a",
+                "09df56780548fd71"
+            ]
+        ]
+    },
+    {
+        "id": "45ecc1ae9e764993",
+        "type": "ui_chart",
+        "z": "c3cbf231de665554",
+        "name": "",
+        "group": "cc80061e13c99f6e",
+        "order": 4,
+        "width": 4,
+        "height": 4,
+        "label": "",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "1024",
+        "removeOlder": "60",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "60",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 830,
+        "y": 560,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "33fa47f2dd70f265",
+        "type": "function",
+        "z": "c3cbf231de665554",
+        "name": "Light function",
+        "func": "var parts = msg.payload.split(',');\nvar temperaturePart = parts.find(part => part.trim().startsWith('Light'));\nvar temperature = parseFloat(temperaturePart.split(':')[1].trim());\n\nmsg.payload = temperature;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 610,
+        "y": 560,
+        "wires": [
+            [
+                "45ecc1ae9e764993",
+                "0597cda3b533f5a8"
+            ]
+        ]
+    },
+    {
+        "id": "805a511a50b8626b",
+        "type": "ui_chart",
+        "z": "c3cbf231de665554",
+        "name": "",
+        "group": "2bb35c451015f4bf",
+        "order": 3,
+        "width": 4,
+        "height": 4,
+        "label": "",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "100",
+        "removeOlder": "60",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "60",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 830,
+        "y": 640,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "822b5e4fe96ba47f",
+        "type": "function",
+        "z": "c3cbf231de665554",
+        "name": "Temperature function",
+        "func": "var parts = msg.payload.split(',');\nvar temperaturePart = parts.find(part => part.trim().startsWith('Temp'));\nvar temperature = parseFloat(temperaturePart.split(':')[1].trim());\n\nmsg.payload = temperature;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 640,
+        "y": 640,
+        "wires": [
+            [
+                "805a511a50b8626b",
+                "3d446f2d061d2b7b"
+            ]
+        ]
+    },
+    {
+        "id": "9202647ea98ec8b4",
+        "type": "ui_chart",
+        "z": "c3cbf231de665554",
+        "name": "",
+        "group": "2bb35c451015f4bf",
+        "order": 4,
+        "width": 4,
+        "height": 4,
+        "label": "",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "1024",
+        "removeOlder": "60",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "60",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 830,
+        "y": 700,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "cf14449f6c37743d",
+        "type": "function",
+        "z": "c3cbf231de665554",
+        "name": "Light function",
+        "func": "var parts = msg.payload.split(',');\nvar temperaturePart = parts.find(part => part.trim().startsWith('Light'));\nvar temperature = parseFloat(temperaturePart.split(':')[1].trim());\n\nmsg.payload = temperature;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 610,
+        "y": 700,
+        "wires": [
+            [
+                "9202647ea98ec8b4",
+                "933fb959a6e8a53e"
+            ]
+        ]
+    },
+    {
+        "id": "27c1abf43ac1d0c1",
+        "type": "function",
+        "z": "c3cbf231de665554",
+        "name": "get nodes to array",
+        "func": "let nodes = {}\nmsg.payload = msg.payload.trim();\n\nnodes = msg.payload.match(/Nodes:\\s*([\\d\\s]+)/)[1].trim().split(/\\s+/);\n\nmsg.payload = nodes;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 630,
+        "y": 780,
+        "wires": [
+            [
+                "04dd05ea9847e2cf"
+            ]
+        ]
+    },
+    {
+        "id": "04dd05ea9847e2cf",
+        "type": "function",
+        "z": "c3cbf231de665554",
+        "name": "array to json",
+        "func": "let tree = { name: \"00\", children: [] };\n\nfunction getParent(nodeId) {\n  return \"0\" + nodeId.slice(-1 * (nodeId.length - 2));\n}\n\nfunction addNode(nodeId) {\n\n  if (nodeId.length == 2) {\n    if (tree.children.length === 0) {\n      tree.children.push({ name: nodeId, children: [] });\n    }\n    const level1 = tree.children.find(child => child.name == nodeId);\n    if (!level1) {\n      tree.children.push({ name: nodeId, children: [] });\n    }\n  }\n\n  if (nodeId.length == 3) { //011\n    let level1 = getParent(nodeId);\n\n    if (tree.children.length === 0) {\n      tree.children.push({ name: level1, children: [] }); // cria 01\n    }\n    level1 = tree.children.find(child => child.name == level1); // encontra 01\n\n    if (level1.children.length === 0) {\n      level1.children.push({ name: nodeId, children: [] }); // cria 011\n    }\n    const level2 = level1.children.find(child => child.name == nodeId);\n    if (!level2) {\n      level1.children.push({ name: nodeId, children: [] }); // cria 011\n    }\n\n  }\n\n  if (nodeId.length == 4) { // 0111\n    let level1 = getParent(getParent(nodeId));\n    if (tree.children.length === 0) { //se 00 vazio\n      tree.children.push({ name: level1, children: [] }); // cria 01\n    }\n\n    level1 = tree.children.find(child => child.name == level1); // encontra 01\n    let level2 = getParent(nodeId); // 011\n    if (level1.children.length === 0) { // se 01 vazio\n      level1.children.push({ name: level2, children: [] }); // adiciona 011\n    }\n\n    level2 = level1.children.find(child => child.name == level2);\n\n    if (level2.children.length === 0) {\n      level2.children.push({ name: nodeId, children: [] }); // adiciona 011\n    }\n    const level3 = level2.children.find(child => child.name == nodeId);\n    if (!level3) {\n      level2.children.push({ name: nodeId, children: [] }); // adiciona 0111\n    }\n  }\n\n  if (nodeId.length == 5) { // 01111\n    let level1 = getParent(getParent(getParent(nodeId)));\n    if (tree.children.length === 0) { //se 00 vazio\n      tree.children.push({ name: level1, children: [] }); // cria 01\n    }\n\n    level1 = tree.children.find(child => child.name == level1); // encontra 01\n    let level2 = getParent(getParent(nodeId)); // 011\n    if (level1.children.length === 0) { // se 01 vazio\n      level1.children.push({ name: level2, children: [] }); // adiciona 011\n    }\n\n    level2 = level1.children.find(child => child.name == level2); // encontra 01\n    let level3 = getParent(nodeId);\n    if (level2.children.length === 0) { // se 01 vazio\n      level2.children.push({ name: level3, children: [] }); // adiciona 011\n    }\n\n    level3 = level2.children.find(child => child.name == level3);\n\n    if (level3.children.length === 0) {\n      level3.children.push({ name: nodeId, children: [] }); // adiciona 0111\n    }\n    const level4 = level3.children.find(child => child.name == nodeId);\n    if (!level4) {\n      level3.children.push({ name: nodeId, children: [] }); // adiciona 01111\n    }\n  }\n}\n\nmsg.payload.forEach(addNode);\nmsg.payload = tree;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 850,
+        "y": 780,
+        "wires": [
+            [
+                "eac9957fab0a939b"
+            ]
+        ]
+    },
+    {
+        "id": "eac9957fab0a939b",
+        "type": "ui_template",
+        "z": "c3cbf231de665554",
+        "group": "e5922190928d13c3",
+        "name": "",
+        "order": 1,
+        "width": "16",
+        "height": "7",
+        "format": "<style>\n.node circle {\n  fill: #fff;\n  stroke: steelblue;\n  stroke-width: 3px;\n}\n\n.node text {\n  font: 14px sans-serif;\n  fill: #000;\n  pointer-events: none;\n}\n\n.link {\n  fill: none;\n  stroke: #ccc;\n  stroke-width: 2px;\n}\n</style>\n\n<div id=\"tree-container\"></div>\n\n<script>\nvar treeData = {};\n\nvar margin = {top: 20, right: 120, bottom: 20, left: 120},\n    width = 960 - margin.right - margin.left,\n    height = 500 - margin.top - margin.bottom;\n\nvar svg = d3.select(\"#tree-container\").append(\"svg\")\n    .attr(\"width\", width + margin.right + margin.left)\n    .attr(\"height\", height + margin.top + margin.bottom)\n  .append(\"g\")\n    .attr(\"transform\", \"translate(\" + margin.left + \",\" + margin.top + \")\");\n\nvar tree = d3.layout.tree()\n    .size([height, width]);\n\nvar diagonal = d3.svg.diagonal()\n    .projection(function(d) { return [d.y, d.x]; });\n\n// Function to update the tree\nfunction update(source) {\n  // Compute the new tree layout\n  var nodes = tree.nodes(treeData).reverse(),\n      links = tree.links(nodes);\n\n  // Normalize for fixed-depth\n  nodes.forEach(function(d) { d.y = d.depth * 180; });\n\n  // Update the nodes\n  var node = svg.selectAll(\".node\")\n      .data(nodes, function(d) { return d.id || (d.id = ++i); });\n\n  var nodeEnter = node.enter().append(\"g\")\n      .attr(\"class\", \"node\")\n      .attr(\"transform\", function(d) { return \"translate(\" + source.y0 + \",\" + source.x0 + \")\"; });\n\n  nodeEnter.append(\"circle\")\n      .attr(\"r\", 1e-6)\n      .style(\"fill\", function(d) { return d._children ? \"lightsteelblue\" : \"#fff\"; })\n      .style(\"stroke\", function(d) { return d._children ? \"steelblue\" : \"#ccc\"; });\n\n  nodeEnter.append(\"text\")\n      .attr(\"x\", 0)\n      .attr(\"dy\", \"-1em\") // Adjusted dy value to position text a bit higher\n      .attr(\"text-anchor\", \"middle\")\n      .text(function(d) { return d.name; })\n      .style(\"fill-opacity\", 1e-6);\n\n  // Transition nodes to their new position\n  var nodeUpdate = node.transition()\n      .duration(duration)\n      .attr(\"transform\", function(d) { return \"translate(\" + d.y + \",\" + d.x + \")\"; });\n\n  nodeUpdate.select(\"circle\")\n      .attr(\"r\", 10)\n      .style(\"fill\", function(d) { return d._children ? \"lightsteelblue\" : \"#fff\"; })\n      .style(\"stroke\", function(d) { return d._children ? \"steelblue\" : \"#ccc\"; });\n\n  nodeUpdate.select(\"text\")\n      .style(\"fill-opacity\", 1);\n\n  var nodeExit = node.exit().transition()\n      .duration(duration)\n      .attr(\"transform\", function(d) { return \"translate(\" + source.y + \",\" + source.x + \")\"; })\n      .remove();\n\n  nodeExit.select(\"circle\")\n      .attr(\"r\", 1e-6);\n\n  nodeExit.select(\"text\")\n      .style(\"fill-opacity\", 1e-6);\n\n  // Update the links\n  var link = svg.selectAll(\".link\")\n      .data(links, function(d) { return d.target.id; });\n\n  // Enter any new links at the parent's previous position.\n  link.enter().insert(\"line\", \"g\")\n      .attr(\"class\", \"link\")\n      .attr(\"x1\", function(d) { return source.y0; })\n      .attr(\"y1\", function(d) { return source.x0; })\n      .attr(\"x2\", function(d) { return source.y0; })\n      .attr(\"y2\", function(d) { return source.x0; });\n\n  // Transition links to their new position.\n  link.transition()\n      .duration(duration)\n      .attr(\"x1\", function(d) { return d.source.y; })\n      .attr(\"y1\", function(d) { return d.source.x; })\n      .attr(\"x2\", function(d) { return d.target.y; })\n      .attr(\"y2\", function(d) { return d.target.x; });\n\n  // Transition exiting nodes to the parent's new position.\n  link.exit().transition()\n      .duration(duration)\n      .attr(\"x1\", function(d) { return source.y; })\n      .attr(\"y1\", function(d) { return source.x; })\n      .attr(\"x2\", function(d) { return source.y; })\n      .attr(\"y2\", function(d) { return source.x; })\n      .remove();\n\n  // Stash the old positions for transition.\n  nodes.forEach(function(d) {\n    d.x0 = d.x;\n    d.y0 = d.y;\n  });\n}\n\nvar i = 0,\n    duration = 0;\n\nupdate(treeData);\n\n// Watch for changes in treeData\nscope.$watch('msg', function(msg) {\n    if(msg) {\n        treeData = msg.payload;\n        update(treeData);\n    }\n});\n\n</script>\n",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 800,
+        "y": 900,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "bf3d68f57d3cd33e",
+        "type": "inject",
+        "z": "c3cbf231de665554",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "\"ID: 1, Temp: 25.00, Light: 1024, Nodes: 01 05 011 0111 021 031 041 051 0211 01111 015 \"",
+        "payloadType": "str",
+        "x": 130,
+        "y": 540,
+        "wires": [
+            [
+                "9ede17af4febdbf3",
+                "1e460769578da2a7",
+                "80f9ada9b03ab904",
+                "7848b40b514a3117",
+                "6abc5f8dd4e3c373",
+                "33fa47f2dd70f265",
+                "822b5e4fe96ba47f",
+                "cf14449f6c37743d",
+                "27c1abf43ac1d0c1"
+            ]
+        ]
+    },
+    {
+        "id": "51e7c219d08ca6be",
+        "type": "ui_gauge",
+        "z": "c3cbf231de665554",
+        "name": "",
+        "group": "57c95d82f8b6e821",
+        "order": 1,
+        "width": 4,
+        "height": 3,
+        "gtype": "gage",
+        "title": "Temperature",
+        "label": "ºC",
+        "format": "{{msg.payload}}",
+        "min": "-40",
+        "max": "125",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 850,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "4d3d630ae6bc750a",
+        "type": "ui_gauge",
+        "z": "c3cbf231de665554",
+        "name": "",
+        "group": "57c95d82f8b6e821",
+        "order": 2,
+        "width": 4,
+        "height": 3,
+        "gtype": "gage",
+        "title": "Light",
+        "label": "units",
+        "format": "{{msg.payload}}",
+        "min": 0,
+        "max": "1024",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 800,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "9c535705bcc5db11",
+        "type": "ui_gauge",
+        "z": "c3cbf231de665554",
+        "name": "",
+        "group": "db05b805d77aca2a",
+        "order": 1,
+        "width": 4,
+        "height": 3,
+        "gtype": "gage",
+        "title": "Temperature",
+        "label": "ºC",
+        "format": "{{msg.payload}}",
+        "min": "-40",
+        "max": "125",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 870,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "ba3378610f0dfd13",
+        "type": "ui_gauge",
+        "z": "c3cbf231de665554",
+        "name": "",
+        "group": "db05b805d77aca2a",
+        "order": 2,
+        "width": 4,
+        "height": 3,
+        "gtype": "gage",
+        "title": "Light",
+        "label": "units",
+        "format": "{{msg.payload}}",
+        "min": 0,
+        "max": "1024",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 890,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "09df56780548fd71",
+        "type": "ui_gauge",
+        "z": "c3cbf231de665554",
+        "name": "",
+        "group": "cc80061e13c99f6e",
+        "order": 1,
+        "width": 4,
+        "height": 3,
+        "gtype": "gage",
+        "title": "Temperature",
+        "label": "ºC",
+        "format": "{{msg.payload}}",
+        "min": "-40",
+        "max": "125",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 890,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "0597cda3b533f5a8",
+        "type": "ui_gauge",
+        "z": "c3cbf231de665554",
+        "name": "",
+        "group": "cc80061e13c99f6e",
+        "order": 2,
+        "width": 4,
+        "height": 3,
+        "gtype": "gage",
+        "title": "Light",
+        "label": "units",
+        "format": "{{msg.payload}}",
+        "min": 0,
+        "max": "1024",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 850,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "3d446f2d061d2b7b",
+        "type": "ui_gauge",
+        "z": "c3cbf231de665554",
+        "name": "",
+        "group": "2bb35c451015f4bf",
+        "order": 1,
+        "width": 4,
+        "height": 3,
+        "gtype": "gage",
+        "title": "Temperature",
+        "label": "ºC",
+        "format": "{{msg.payload}}",
+        "min": "-40",
+        "max": "125",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 870,
+        "y": 660,
+        "wires": []
+    },
+    {
+        "id": "933fb959a6e8a53e",
+        "type": "ui_gauge",
+        "z": "c3cbf231de665554",
+        "name": "",
+        "group": "2bb35c451015f4bf",
+        "order": 2,
+        "width": 4,
+        "height": 3,
+        "gtype": "gage",
+        "title": "Light",
+        "label": "units",
+        "format": "{{msg.payload}}",
+        "min": 0,
+        "max": "1024",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 870,
+        "y": 740,
+        "wires": []
+    }
+]
