@@ -118,3 +118,9 @@ Master's Thesis in Wireless Sensor Networks (WSN) using Arduino boards, nRF24L01
 - Converted tree nodes ID to octal when sending through MQTT
 - Changed Sensor_Values to floats again (UNO -> Nano ESP32 differ int sizes)
 - Added function called fakeSensorValues() that generates random values for the temperature and light sensors
+
+16/04/2024
+- Solved bug where the sensor node was automatically activating the student nodes when sending their new ID which was causing multiple duplicates for some time that were showing on the node red dashboard
+- When failing to send more than 5 messages the sensor node restarts the network connection
+- Now the main node and the sensor nodes discard unknown message types
+- Simplification of the populateActiveNodesArray() function
