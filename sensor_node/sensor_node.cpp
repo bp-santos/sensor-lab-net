@@ -39,45 +39,15 @@ void SensorNode::setupRF24Network() {
 }
 
 void SensorNode::populateActiveNodesArray() {
-  int currentNumber = _node;
-  for (int i = 0; i < MAX_STUDENT_NODES; i++) {
-    int penultimateDigit = (currentNumber / 10) % 10;
-    int antepenultimateDigit = (currentNumber / 100) % 10;
-    int anteantepenultimateDigit = (currentNumber / 1000) % 10;
-    int numDigits = String(currentNumber).length();
-    int nextNumber;
-
-    if(numDigits == 1) {
-      active_nodes[i].nodeID = 20 + _node;
-    }
-    if (numDigits == 2 && penultimateDigit < 5) {
-      active_nodes[i].nodeID = (currentNumber / 100) * 100 + (penultimateDigit + 1) * 10 + (currentNumber % 10);
-    }
-    if (numDigits == 2 && penultimateDigit == 5) {
-      active_nodes[i].nodeID = 120 + _node;
-    }
-    if (numDigits == 3 && antepenultimateDigit < 5) {
-      active_nodes[i].nodeID = (currentNumber / 1000) * 1000 + (antepenultimateDigit + 1) * 100 + (currentNumber % 100);
-    }
-    if (numDigits == 3 && antepenultimateDigit == 5 && penultimateDigit < 5) {
-      active_nodes[i].nodeID = (currentNumber / 1000) * 1000 + 100 + (penultimateDigit + 1) * 10 + (currentNumber % 10);
-    }
-    if (numDigits == 3 && antepenultimateDigit == 5 && penultimateDigit == 5) {
-      active_nodes[i].nodeID = 1120 + _node;
-    }
-    if (numDigits == 4 && anteantepenultimateDigit < 5) {
-      active_nodes[i].nodeID = (currentNumber / 10000) * 10000 + (anteantepenultimateDigit + 1) * 1000 + (currentNumber % 1000);
-    }
-    if (numDigits == 4 && anteantepenultimateDigit == 5 && antepenultimateDigit < 5) {
-      active_nodes[i].nodeID = (currentNumber / 10000) * 10000 + 1000 + (antepenultimateDigit + 1) * 100 + (currentNumber % 100);
-    }
-    if (numDigits == 4 && anteantepenultimateDigit == 5 && antepenultimateDigit == 5 && penultimateDigit < 5) {
-      active_nodes[i].nodeID = (currentNumber / 10000) * 10000 + 1000 + 100 + (penultimateDigit + 1) * 10 + (currentNumber % 10);
-    }
-    currentNumber = active_nodes[i].nodeID;
-  }
+  int table[MAX_STUDENT_NODES] = {20, 30, 40, 50, 120, 220, 320, 420, 520, 130};/*, 230, 330, 430, 530, 140, 240, 340, 440, 540, 150, 250, 350, 450, 550, 1120, 2120, 3120, 4120, 5120,
+                      1220, 2220, 3220, 4220, 5220, 1320, 2320, 3320, 4320, 5320, 1420, 2420, 3420, 4420, 5420, 1520, 2520, 3520, 4520, 5520, 1130, 2130, 3130, 4130, 5130,
+                      1230, 2230, 3230, 4230, 5230, 1330, 2330, 3330, 4330, 5330, 1430, 2430, 3430, 4430, 5430, 1530, 2530, 3530, 4530, 5530, 1140, 2140, 3140, 4140, 5140,
+                      1240, 2240, 3240, 4240, 5240, 1340, 2340, 3340, 4340, 5340, 1440, 2440, 3440, 4440, 5440, 1540, 2540, 3540, 4540, 5540, 1150, 2150, 3150, 4150, 5150, 
+                      1250, 2250, 3250, 4250, 5250, 1350, 2350, 3350, 4350, 5350, 1450, 2450, 3450, 4450, 5450, 1550, 2550, 3550, 4550, 5550};*/
 
   for (int i = 0; i < MAX_STUDENT_NODES; i++) {
+    active_nodes[i].nodeID = table[i]+1;
+
     int decimalValue = 0;
     int base = 1; // Base for octal (8^0 = 1 initially)
     
@@ -125,6 +95,11 @@ void SensorNode::receive24RFNetworkMessage() {
     if(header.type == 'R') {handle_R(header); send_R(header.from_node);}
     if(header.type == 'N') {uint16_t id = handle_N(header);send_N(header.from_node, id);}
     if(header.type == 'P') handle_P(header);
+    if(header.type != 'A' && header.type != 'D' && header.type != 'R' && header.type != 'N' && header.type != 'P'){
+      Serial.print(F("*** WARNING *** Unknown message type "));
+      Serial.println(header.type);
+      network.read(header, 0, 0);
+    }
   }
 }
 
@@ -221,6 +196,15 @@ void SensorNode::send_N(uint16_t to, uint16_t id) {
   delay(100); // ensure reliable connectivity
   bool ok = network.write(header, &id, sizeof(id));
   Serial.println(ok ? F("; status = 1)") : F("; status = 0)"));
+
+  if(!ok) {
+    for (int i = 0; i < MAX_STUDENT_NODES; i++) {
+      if (active_nodes[i].status && active_nodes[i].nodeID == id) {
+        active_nodes[i].status = false;
+        break;
+      }
+    }
+  }
 }
 
 void SensorNode::handle_P(RF24NetworkHeader& header) {

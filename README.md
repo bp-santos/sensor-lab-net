@@ -13,7 +13,6 @@ Master's Thesis in Wireless Sensor Networks (WSN) using Arduino boards, nRF24L01
 - adicionar nome a todos os nós para depois dar display no dashboard
 - no node-red colocar os 0 na árvore
 - no node-red adicionar o nó pré instalado na árvore
-- no main node quando ha mais que um no para se mandar ele nãoo está a escrever no serialized
 
 ## Logs
 

@@ -7,6 +7,8 @@ unsigned long last_sent_reading;  // When did we send the last readings request?
 unsigned long last_sent_alert_deactivation; // When did send the last alert deactivation?
 unsigned long last_sent_keep_alive; // When did we send the last keep alive?
 
+int countFailedMessages = 0;
+
 StudentNode::StudentNode(uint16_t sensorNode, int name, int channel) {
   if(sensorNode < 1 || sensorNode > 5) exit(-1);  // The sensor node must be between 1 and 5
   _sensorNode = sensorNode;
@@ -124,6 +126,9 @@ void StudentNode::sendReadingsRequest(const unsigned long interval) {
     delay(100); // ensure reliable connectivity
     bool ok = network.write(header, 0, 0);
     Serial.println(ok ? F(" (status = 1)") : F(" (status = 0)"));
+
+    if(!ok) countFailedMessages++;
+    if(ok) countFailedMessages = 0;
   }
 }
 
@@ -142,6 +147,9 @@ void StudentNode::sendKeepAlive(const unsigned long interval) {
     delay(100); // ensure reliable connectivity
     bool ok = network.write(header, 0, 0);
     Serial.println(ok ? F(" (status = 1)") : F(" (status = 0)"));
+
+    if(!ok) countFailedMessages++;
+    if(ok) countFailedMessages = 0;
   }
 }
 
@@ -165,6 +173,9 @@ void StudentNode::sendAlertRequest(char type, int value) {
   delay(100); // ensure reliable connectivity
   bool ok = network.write(header, &message, sizeof(message));
   Serial.println(ok ? F(" (status = 1)") : F(" (status = 0)"));
+
+  if(!ok) countFailedMessages++;
+  if(ok) countFailedMessages = 0;
 }
 
 void StudentNode::sendAlertDeactivation(const unsigned long interval) {
@@ -182,5 +193,16 @@ void StudentNode::sendAlertDeactivation(const unsigned long interval) {
     delay(100); // ensure reliable connectivity  
     bool ok = network.write(header, 0, 0);
     Serial.println(ok ? F(" (status = 1)") : F(" (status = 0)"));
+
+    if(!ok) countFailedMessages++;
+    if(ok) countFailedMessages = 0;
+  }
+}
+
+void StudentNode::restart() {
+  if (countFailedMessages >= 5) {
+    Serial.println(F("Restarting node connection"));
+    _node = 010 + _sensorNode;
+    init();
   }
 }

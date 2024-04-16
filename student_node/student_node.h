@@ -25,6 +25,7 @@ class StudentNode {
     void sendAlertDeactivation(const unsigned long interval);
     void sendAlertRequest(char type, int value);
     void sendKeepAlive(const unsigned long interval);
+    void restart();
 
   private:
     uint16_t _sensorNode;

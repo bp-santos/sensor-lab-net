@@ -18,4 +18,5 @@ void loop() {
   studentNode.sendKeepAlive(3000);
   studentNode.receive24RFNetworkResponse();
   studentNode.sendReadingsRequest(5000);
+  studentNode.restart();
 }

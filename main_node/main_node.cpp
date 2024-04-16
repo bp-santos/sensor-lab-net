@@ -54,6 +54,11 @@ void MainNode::receive24RFNetworkMessage() {
     if(header.type == 'B') handle_B(header);
     if(header.type == 'S') handle_S(header);
     if(header.type == 'P') handle_P(header);
+    if(header.type != 'R' && header.type != 'B' && header.type != 'S' && header.type != 'P'){
+      Serial.print(F("*** WARNING *** Unknown message type "));
+      Serial.println(header.type);
+      network.read(header, 0, 0);
+    }
   }
 }
 
@@ -77,7 +82,7 @@ void MainNode::handle_R(RF24NetworkHeader& header) {
 
 void MainNode::handle_B(RF24NetworkHeader& header) {
   network.read(header, 0, 0);
-  for (int i = 0; i < MAX_STUDENT_NODES; ++i) {
+  for (int i = 0; i < MAX_STUDENT_NODES; i++) {
     network_status[header.from_node - 1].connected_nodes[i] = 0;
   }
 
@@ -90,7 +95,7 @@ void MainNode::handle_S(RF24NetworkHeader& header) {
   uint16_t temp;
   network.read(header, &temp, sizeof(temp));
   
-  for (int i = 0; i < MAX_STUDENT_NODES; ++i) {
+  for (int i = 0; i < MAX_STUDENT_NODES; i++) {
     if (network_status[header.from_node - 1].connected_nodes[i] == 0) {
       network_status[header.from_node - 1].connected_nodes[i] = temp;
       break;
@@ -144,7 +149,7 @@ void MainNode::publishNetworkStatus(char *topic, const unsigned long interval) {
   if (now - last_sent > interval) {
     last_sent = now;
 
-    for (int i = 0; i < MAX_SENSOR_NODES; ++i) {
+    for (int i = 0; i < MAX_SENSOR_NODES; i++) {
       if (network_status[i].status) {
         String serializedData = "ID: ";
         serializedData += String(i+1);
@@ -158,7 +163,7 @@ void MainNode::publishNetworkStatus(char *topic, const unsigned long interval) {
           if (network_status[i].connected_nodes[j] != 0) {
             char octal[7];
             sprintf(octal, "%o", network_status[i].connected_nodes[j]);
-            serializedData += String(0+octal);
+            serializedData += String(octal);
             serializedData += " ";
           }
         }
