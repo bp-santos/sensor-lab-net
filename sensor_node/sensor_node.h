@@ -8,10 +8,17 @@
 
 const int MAX_STUDENT_NODES = 10; //124
 const int MAX_ALERT_PER_STUDENT = 1;
+const int NAME_LENGTH = 7;
 
-struct Sensor_Values {
+struct Sensor_Node {
+  char name[NAME_LENGTH];
   float temperature;
   float phototransistor;
+};
+
+struct Student_Node {
+  uint16_t nodeID;
+  char name[NAME_LENGTH];
 };
 
 struct Alert_Request {
@@ -20,19 +27,18 @@ struct Alert_Request {
 };
 
 struct Active_Nodes {
-  uint16_t nodeID;
-  int name;
+  Student_Node node;
+  Alert_Request alerts[MAX_ALERT_PER_STUDENT];
   bool status = false;
   long time;
-  Alert_Request alerts[MAX_ALERT_PER_STUDENT];
 };
 
-extern Sensor_Values sensorData;
+extern Sensor_Node sensorData;
 extern Active_Nodes active_nodes[MAX_STUDENT_NODES];
 
 class SensorNode {
   public:
-    SensorNode(uint16_t node, int channel);
+    SensorNode(uint16_t node, char* name, int channel);
     void init();
     void populateActiveNodesArray();
     void setupRF24Network();
@@ -47,6 +53,7 @@ class SensorNode {
   private:
     uint16_t _node;
     int _channel;
+
     void handle_A(RF24NetworkHeader& header);
     void handle_D(RF24NetworkHeader& header);
     void handle_R(RF24NetworkHeader& header);

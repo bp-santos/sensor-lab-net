@@ -3,7 +3,9 @@
 #include <RF24.h>
 #include <RF24Network.h>
 
-StudentNode studentNode(01, 10570, 90); // (sensorNode, name, channel)
+char name[NAME_LENGTH] = "BERN01";
+
+StudentNode studentNode(01, name, 90); // (sensorNode, name, channel)
 
 void setup() {
   Serial.begin(115200);

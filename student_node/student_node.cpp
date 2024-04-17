@@ -9,11 +9,11 @@ unsigned long last_sent_keep_alive; // When did we send the last keep alive?
 
 int countFailedMessages = 0;
 
-StudentNode::StudentNode(uint16_t sensorNode, int name, int channel) {
+StudentNode::StudentNode(uint16_t sensorNode, char* name, int channel) {
   if(sensorNode < 1 || sensorNode > 5) exit(-1);  // The sensor node must be between 1 and 5
   _sensorNode = sensorNode;
   _node = 010 + sensorNode; // The initial node ID is 011, 012, 013, 014 or 015
-  _name = name;
+  strcpy(_name, name);
   _channel = channel;
 }
 
@@ -55,7 +55,7 @@ void StudentNode::sendIDRequest(){
   Serial.print(_sensorNode);
 
   delay(100); // ensure reliable connectivity
-  bool ok = network.write(header, _name, sizeof(_name));
+  bool ok = network.write(header, &_name, sizeof(_name));
   Serial.println(ok ? F(" (status = 1)") : F(" (status = 0)"));
 }
 
@@ -85,13 +85,13 @@ void StudentNode::handle_N(RF24NetworkHeader& header){
 }
 
 void StudentNode::handle_R(RF24NetworkHeader& header) {
-  Sensor_Values temp;
+  Sensor_Node temp;
   network.read(header, &temp, sizeof(temp));
 
   Serial.print(millis());
-  Serial.print(F(": Readings received from "));
-  Serial.print(header.from_node);
-  Serial.print(F(" - \"[temp: "));
+  Serial.print(F(": Readings received from \""));
+  Serial.print(temp.name);
+  Serial.print(F("\" - \"[temp: "));
   Serial.print(temp.temperature);
   Serial.print(F("; light: "));
   Serial.print(temp.phototransistor);

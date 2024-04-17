@@ -64,15 +64,16 @@ void MainNode::receive24RFNetworkMessage() {
 
 void MainNode::handle_R(RF24NetworkHeader& header) {
   network.update();
-  Sensor_Values temp;
+  Sensor_Node temp;
   network.read(header, &temp, sizeof(temp));
 
   network_status[header.from_node - 1].data.temperature = temp.temperature;
   network_status[header.from_node - 1].data.phototransistor = temp.phototransistor;
+  strcpy(network_status[header.from_node - 1].data.name, temp.name);
 
   Serial.print(millis());
   Serial.print(F(": Readings received from "));
-  Serial.print(header.from_node);
+  Serial.print(temp.name);
   Serial.print(F(" - \"[temp: "));
   Serial.print(temp.temperature);
   Serial.print(F("; light: "));
@@ -83,7 +84,7 @@ void MainNode::handle_R(RF24NetworkHeader& header) {
 void MainNode::handle_B(RF24NetworkHeader& header) {
   network.read(header, 0, 0);
   for (int i = 0; i < MAX_STUDENT_NODES; i++) {
-    network_status[header.from_node - 1].connected_nodes[i] = 0;
+    network_status[header.from_node - 1].connected_nodes[i].nodeID = 0;
   }
 
   Serial.print(millis());
@@ -92,12 +93,13 @@ void MainNode::handle_B(RF24NetworkHeader& header) {
 }
 
 void MainNode::handle_S(RF24NetworkHeader& header) {
-  uint16_t temp;
-  network.read(header, &temp, sizeof(temp));
+  Student_Node message;
+  network.read(header, &message, sizeof(message));
   
   for (int i = 0; i < MAX_STUDENT_NODES; i++) {
-    if (network_status[header.from_node - 1].connected_nodes[i] == 0) {
-      network_status[header.from_node - 1].connected_nodes[i] = temp;
+    if (network_status[header.from_node - 1].connected_nodes[i].nodeID == 0) {
+      network_status[header.from_node - 1].connected_nodes[i].nodeID = message.nodeID;
+      strcpy(network_status[header.from_node - 1].connected_nodes[i].name, message.name);
       break;
     }
   }
@@ -106,7 +108,7 @@ void MainNode::handle_S(RF24NetworkHeader& header) {
   Serial.print(F(": Node received from "));
   Serial.print(header.from_node);
   Serial.print(F(" ("));
-  Serial.print(temp);
+  Serial.print(message.name);
   Serial.println(F(")"));
 }
 
@@ -151,20 +153,25 @@ void MainNode::publishNetworkStatus(char *topic, const unsigned long interval) {
 
     for (int i = 0; i < MAX_SENSOR_NODES; i++) {
       if (network_status[i].status) {
-        String serializedData = "ID: ";
-        serializedData += String(i+1);
-        serializedData += ", Temp: ";
+        String serializedData = "Temp: ";
         serializedData += String(network_status[i].data.temperature);
         serializedData += ", Light: ";
         serializedData += String(network_status[i].data.phototransistor);
-        serializedData += ", Nodes: ";
+        serializedData += ", Nodes: (";
+        serializedData += String(i+1);
+        serializedData += ", ";
+        serializedData += network_status[i].data.name;
+        serializedData += ") ";
 
         for (int j = 0; j < MAX_STUDENT_NODES; ++j) {
-          if (network_status[i].connected_nodes[j] != 0) {
+          if (network_status[i].connected_nodes[j].nodeID != 0) {
             char octal[7];
-            sprintf(octal, "%o", network_status[i].connected_nodes[j]);
-            serializedData += String(octal);
-            serializedData += " ";
+            sprintf(octal, "%o", network_status[i].connected_nodes[j].nodeID);
+            serializedData += "(";
+            serializedData += octal;
+            serializedData += ", ";
+            serializedData += network_status[i].connected_nodes[j].name;
+            serializedData += ") ";
           }
         }
 

@@ -9,18 +9,26 @@
 
 const int MAX_STUDENT_NODES = 10; // 155
 const int MAX_SENSOR_NODES = 1; // 5
+const int NAME_LENGTH = 7;
 
-struct Sensor_Values { // os inteiros têm tamanhos diferentes num e noutro
+struct Sensor_Node { // os inteiros têm tamanhos diferentes num e noutro
+  char name[NAME_LENGTH];
   float temperature;
   float phototransistor;
 };
 
+struct Student_Node {
+  uint16_t nodeID;
+  char name[NAME_LENGTH];
+};
+
 struct Network_Status {
-  uint16_t connected_nodes[MAX_STUDENT_NODES];
-  Sensor_Values data;
+  Sensor_Node data;
+  Student_Node connected_nodes[MAX_STUDENT_NODES];
   bool status = false;
   long time;
 };
+
 
 extern Network_Status network_status[MAX_SENSOR_NODES];
 

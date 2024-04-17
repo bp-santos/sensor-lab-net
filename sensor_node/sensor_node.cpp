@@ -1,7 +1,7 @@
 #include "sensor_node.h"
 
 Active_Nodes active_nodes[MAX_STUDENT_NODES];
-Sensor_Values sensorData;
+Sensor_Node sensorData;
 RF24 radio(7, 8);
 RF24Network network(radio);
 
@@ -9,8 +9,9 @@ unsigned long last_reading;
 unsigned long last_status_sent;
 unsigned long last_sent_keep_alive;
 
-SensorNode::SensorNode(uint16_t node, int channel) {
+SensorNode::SensorNode(uint16_t node, char* name, int channel) {
   _node = node;
+  strcpy(sensorData.name, name);
   _channel = channel;
 }
 
@@ -46,20 +47,20 @@ void SensorNode::populateActiveNodesArray() {
                       1250, 2250, 3250, 4250, 5250, 1350, 2350, 3350, 4350, 5350, 1450, 2450, 3450, 4450, 5450, 1550, 2550, 3550, 4550, 5550};*/
 
   for (int i = 0; i < MAX_STUDENT_NODES; i++) {
-    active_nodes[i].nodeID = table[i]+1;
+    active_nodes[i].node.nodeID = table[i]+1;
 
     int decimalValue = 0;
     int base = 1; // Base for octal (8^0 = 1 initially)
     
     // Extract digits from right to left and convert to decimal
-    int octalNum = active_nodes[i].nodeID;
+    int octalNum = active_nodes[i].node.nodeID;
     while (octalNum != 0) {
       int lastDigit = octalNum % 10; // Get the rightmost digit
       decimalValue += lastDigit * base; // Add digit * base to decimal value
       octalNum /= 10; // Move to the next digit
       base *= 8; // Increase base (8^1, 8^2, ...)
     }
-    active_nodes[i].nodeID = decimalValue;
+    active_nodes[i].node.nodeID = decimalValue;
   }
 }
 
@@ -124,7 +125,7 @@ void SensorNode::handle_D(RF24NetworkHeader& header) {
   network.read(header, 0, 0);
 
   for (int i = 0; i < MAX_STUDENT_NODES; ++i) {
-    if (active_nodes[i].nodeID == header.from_node){
+    if (active_nodes[i].node.nodeID == header.from_node){
       active_nodes[i].alerts[0].type = '\0';
       active_nodes[i].alerts[0].value = 0.0;
       break;
@@ -158,15 +159,15 @@ void SensorNode::send_R(uint16_t to) {
 }
 
 uint16_t SensorNode::handle_N(RF24NetworkHeader& header) {
-  int message;
+  char message[NAME_LENGTH] = "";
   network.read(header, &message, sizeof(message));
 
   uint16_t id;
   for (int i = 0; i < MAX_STUDENT_NODES; i++) {
     if (!active_nodes[i].status) {
-      id = active_nodes[i].nodeID;
+      id = active_nodes[i].node.nodeID;
       active_nodes[i].status = true;
-      active_nodes[i].name = message;
+      strcpy(active_nodes[i].node.name, message);
       active_nodes[i].time = millis();
       for (int j = 0; j < MAX_ALERT_PER_STUDENT; ++j) {
         active_nodes[i].alerts[j].type = '\0';
@@ -178,7 +179,10 @@ uint16_t SensorNode::handle_N(RF24NetworkHeader& header) {
 
   Serial.print(millis());
   Serial.print(F(": Node ID request received from "));
-  Serial.println(header.from_node);
+  Serial.print(header.from_node);
+  Serial.print(F(" with the name \""));
+  Serial.print(message);
+  Serial.println(F("\""));
 
   return id;
 }
@@ -199,7 +203,7 @@ void SensorNode::send_N(uint16_t to, uint16_t id) {
 
   if(!ok) {
     for (int i = 0; i < MAX_STUDENT_NODES; i++) {
-      if (active_nodes[i].status && active_nodes[i].nodeID == id) {
+      if (active_nodes[i].status && active_nodes[i].node.nodeID == id) {
         active_nodes[i].status = false;
         break;
       }
@@ -211,7 +215,7 @@ void SensorNode::handle_P(RF24NetworkHeader& header) {
   network.read(header, 0, 0);
 
   for (int i = 0; i < MAX_STUDENT_NODES; i++) {
-    if (active_nodes[i].nodeID == header.from_node) {
+    if (active_nodes[i].node.nodeID == header.from_node) {
       active_nodes[i].status = true;
       active_nodes[i].time = millis();
       break; 
@@ -244,12 +248,12 @@ void SensorNode::send_S(uint16_t to) {
 
       Serial.print(millis());
       Serial.print(F(": Active node ("));
-      Serial.print(active_nodes[i].nodeID);
+      Serial.print(active_nodes[i].node.name);
       Serial.print(F(") sent to "));
       Serial.print(to);
 
       delay(100); // ensure reliable transmission
-      bool ok = network.write(header, &active_nodes[i].nodeID, sizeof(active_nodes[i].nodeID));
+      bool ok = network.write(header, &active_nodes[i].node, sizeof(active_nodes[i].node));
       Serial.println(ok ? F(" (status = 1)") : F(" (status = 0)"));
     }
   }
@@ -281,7 +285,7 @@ void SensorNode::checkNodesConnection(const unsigned long interval) {
 
       Serial.print(millis());
       Serial.print(": Node ");
-      Serial.print(active_nodes[i].nodeID);
+      Serial.print(active_nodes[i].node.nodeID);
       Serial.println(" removed from active nodes list");
     }
   }
@@ -314,7 +318,7 @@ void SensorNode::checkAlerts() {
         }
 
         network.update();
-        RF24NetworkHeader header(active_nodes[i].nodeID, 'A');
+        RF24NetworkHeader header(active_nodes[i].node.nodeID, 'A');
         bool ok = network.write(header, &temp, sizeof(temp));
         Serial.println(ok ? F(" (status = 1)") : F(" (status = 0)"));
       }

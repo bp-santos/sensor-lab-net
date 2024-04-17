@@ -3,7 +3,9 @@
 #include <RF24.h>
 #include <RF24Network.h>
 
-SensorNode sensorNode(01, 90); // (node, channel)
+char name[NAME_LENGTH] = "NODE01";
+
+SensorNode sensorNode(01, name, 90); // (node, channel)
 int tempPin = 1;
 int lightPin = 2;
 

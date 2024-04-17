@@ -6,8 +6,11 @@
 #include <RF24.h>
 #include <RF24Network.h>
 
-struct Sensor_Values {
-  float temperature;
+const int NAME_LENGTH = 7;
+
+struct Sensor_Node {
+  char name[NAME_LENGTH];
+  float temperature;  
   float phototransistor;
 };
 
@@ -18,7 +21,7 @@ struct Alert_Request {
 
 class StudentNode {
   public:
-    StudentNode(uint16_t sensorNode, int name, int channel);
+    StudentNode(uint16_t sensorNode, char* name, int channel);
     void init();
     void receive24RFNetworkResponse();
     void sendReadingsRequest(const unsigned long interval);
@@ -30,7 +33,7 @@ class StudentNode {
   private:
     uint16_t _sensorNode;
     uint16_t _node;
-    int _name;
+    char _name[NAME_LENGTH];
     int _channel;
 
     void setupRF24Network();

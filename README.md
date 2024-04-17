@@ -10,9 +10,9 @@ Master's Thesis in Wireless Sensor Networks (WSN) using Arduino boards, nRF24L01
 
 ## To-do
 - poder gerar mais que um alerta por estudante
-- adicionar nome a todos os nós para depois dar display no dashboard
 - no node-red colocar os 0 na árvore
 - no node-red adicionar o nó pré instalado na árvore
+- no node-red colocar o nome dos nós na árvore ao lado do seu id
 
 ## Logs
 
@@ -124,3 +124,10 @@ Master's Thesis in Wireless Sensor Networks (WSN) using Arduino boards, nRF24L01
 - When failing to send more than 5 messages the sensor node restarts the network connection
 - Now the main node and the sensor nodes discard unknown message types
 - Simplification of the populateActiveNodesArray() function
+
+17/04/2024
+- Sensor_Values refactor to Sensor_Node which now includes a name for the node for better understanding.
+- When sending sensor data, the sensor node also sends its name for id.
+- The student nodes are also sending their name to their sensor node for better understanding.
+- Refactoring of Sensor_Node to include the new structure Node important to easily send the connected nodes and their name between the sensor node and the main node.
+- Changed the data that is going to be transmitted via MQTT to include the names of every node.
