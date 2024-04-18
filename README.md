@@ -10,8 +10,7 @@ Master's Thesis in Wireless Sensor Networks (WSN) using Arduino boards, nRF24L01
 
 ## To-do
 - poder gerar mais que um alerta por estudante
-- o student-node deve usar um endianess diferente das outras boards por isso os readings ficam todos diferentes
-- mudar a estrutura dos dados enviados através de MQTT para algo deste género: {"Temp": 25, "Light": 500, "Nodes": [{"id": "01", "name": "NODE01"}, {"id": "031", "name": "BERN01"}]}
+- o student-node deve usar um endianess diferente das outras boards por isso os readings ficam todos diferentes}
 
 ## Logs
 

@@ -145,7 +145,6 @@ void MainNode::connectPublisher(char *username, char *mqttPassword) {
   client.loop();
 }
 
-// todo: pensar sobre isto
 void MainNode::publishNetworkStatus(char *topic, const unsigned long interval) {
   unsigned long now = millis();
   if (now - last_sent > interval) {
@@ -153,33 +152,33 @@ void MainNode::publishNetworkStatus(char *topic, const unsigned long interval) {
 
     for (int i = 0; i < MAX_SENSOR_NODES; i++) {
       if (network_status[i].status) {
-        String serializedData = "Temp: ";
-        serializedData += String(network_status[i].data.temperature);
-        serializedData += ", Light: ";
-        serializedData += String(network_status[i].data.phototransistor);
-        serializedData += ", Nodes: (";
-        serializedData += String(i+1);
-        serializedData += ", ";
-        serializedData += network_status[i].data.name;
-        serializedData += ") ";
+        DynamicJsonDocument jsonDoc(512);
+        JsonObject root = jsonDoc.to<JsonObject>();
+        root["Temp"] = network_status[i].data.temperature;
+        root["Light"] = network_status[i].data.phototransistor;
 
-        for (int j = 0; j < MAX_STUDENT_NODES; ++j) {
+        JsonArray nodes = root.createNestedArray("Nodes");
+
+        JsonObject node = nodes.createNestedObject();
+        node["id"] = "0"+ String(i + 1);
+        node["name"] = network_status[i].data.name;
+
+        for (int j = 0; j < MAX_STUDENT_NODES; j++) {
           if (network_status[i].connected_nodes[j].nodeID != 0) {
-            char octal[7];
-            sprintf(octal, "%o", network_status[i].connected_nodes[j].nodeID);
-            serializedData += "(";
-            serializedData += octal;
-            serializedData += ", ";
-            serializedData += network_status[i].connected_nodes[j].name;
-            serializedData += ") ";
+            JsonObject node = nodes.createNestedObject();
+            node["id"] = "0" + String(network_status[i].connected_nodes[j].nodeID, DEC);
+            node["name"] = network_status[i].connected_nodes[j].name;
           }
         }
 
+        String jsonString;
+        serializeJson(root, jsonString);
+
         Serial.print(millis());
         Serial.print(F(": "));
-        Serial.println(serializedData);
+        Serial.println(jsonString);
 
-        //client.publish(topic, serializedData.c_str());
+        //client.publish(topic, jsonString.c_str());
       }
     }
   }

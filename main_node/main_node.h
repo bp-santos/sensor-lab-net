@@ -6,12 +6,13 @@
 #include <PubSubClient.h>
 #include <RF24.h>
 #include <RF24Network.h>
+#include <ArduinoJson.h>
 
-const int MAX_STUDENT_NODES = 10; // 155
-const int MAX_SENSOR_NODES = 1; // 5
+const int MAX_STUDENT_NODES = 124;
+const int MAX_SENSOR_NODES = 1;
 const int NAME_LENGTH = 7;
 
-struct Sensor_Node { // os inteiros têm tamanhos diferentes num e noutro
+struct Sensor_Node {
   char name[NAME_LENGTH];
   int16_t temperature;
   int16_t phototransistor;
