@@ -72,9 +72,9 @@ void MainNode::handle_R(RF24NetworkHeader& header) {
   strcpy(network_status[header.from_node - 1].data.name, temp.name);
 
   Serial.print(millis());
-  Serial.print(F(": Readings received from "));
+  Serial.print(F(": Readings received from \""));
   Serial.print(temp.name);
-  Serial.print(F(" - \"[temp: "));
+  Serial.print(F("\" - \"[temp: "));
   Serial.print(temp.temperature);
   Serial.print(F("; light: "));
   Serial.print(temp.phototransistor);

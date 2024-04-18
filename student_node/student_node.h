@@ -10,8 +10,8 @@ const int NAME_LENGTH = 7;
 
 struct Sensor_Node {
   char name[NAME_LENGTH];
-  float temperature;  
-  float phototransistor;
+  int16_t temperature;  
+  int16_t phototransistor;
 };
 
 struct Alert_Request {

@@ -6,14 +6,14 @@
 #include <RF24.h>
 #include <RF24Network.h>
 
-const int MAX_STUDENT_NODES = 10; //124
+const int MAX_STUDENT_NODES = 124;
 const int MAX_ALERT_PER_STUDENT = 1;
 const int NAME_LENGTH = 7;
 
 struct Sensor_Node {
   char name[NAME_LENGTH];
-  float temperature;
-  float phototransistor;
+  int16_t temperature;
+  int16_t phototransistor;
 };
 
 struct Student_Node {

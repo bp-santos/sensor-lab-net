@@ -13,8 +13,8 @@ const int NAME_LENGTH = 7;
 
 struct Sensor_Node { // os inteiros têm tamanhos diferentes num e noutro
   char name[NAME_LENGTH];
-  float temperature;
-  float phototransistor;
+  int16_t temperature;
+  int16_t phototransistor;
 };
 
 struct Student_Node {

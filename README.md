@@ -10,9 +10,8 @@ Master's Thesis in Wireless Sensor Networks (WSN) using Arduino boards, nRF24L01
 
 ## To-do
 - poder gerar mais que um alerta por estudante
-- no node-red colocar os 0 na árvore
-- no node-red adicionar o nó pré instalado na árvore
-- no node-red colocar o nome dos nós na árvore ao lado do seu id
+- o student-node deve usar um endianess diferente das outras boards por isso os readings ficam todos diferentes
+- mudar a estrutura dos dados enviados através de MQTT para algo deste género: {"Temp": 25, "Light": 500, "Nodes": [{"id": "01", "name": "NODE01"}, {"id": "031", "name": "BERN01"}]}
 
 ## Logs
 
@@ -131,3 +130,9 @@ Master's Thesis in Wireless Sensor Networks (WSN) using Arduino boards, nRF24L01
 - The student nodes are also sending their name to their sensor node for better understanding.
 - Refactoring of Sensor_Node to include the new structure Node important to easily send the connected nodes and their name between the sensor node and the main node.
 - Changed the data that is going to be transmitted via MQTT to include the names of every node.
+
+18/04/2024
+- Sensor Node changed to work with the Arduino Nano ESP32
+- Change readings to int16_t to be supported across all boards
+- The node-red tree now displays the name of each node on top of its id
+- The code of the node-red was simplified
