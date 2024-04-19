@@ -135,3 +135,7 @@ Master's Thesis in Wireless Sensor Networks (WSN) using Arduino boards, nRF24L01
 - Change readings to int16_t to be supported across all boards
 - The node-red tree now displays the name of each node on top of its id
 - The code of the node-red was simplified
+
+19/04/2024
+- Updated the node-red dashboard tree to include an image for each node
+- The code of the node-red was simplified
