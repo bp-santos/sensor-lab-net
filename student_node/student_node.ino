@@ -7,16 +7,19 @@ char name[NAME_LENGTH] = "BERN01";
 
 StudentNode studentNode(01, name, 90); // (sensorNode, name, channel)
 
-void setup() {
+void setup()
+{
   Serial.begin(115200);
-  while (!Serial) {
+  while (!Serial)
+  {
     // some boards need this because of native USB capability
   }
   studentNode.init();
   // studentNode.sendAlertRequest('T', -100.0);
 }
 
-void loop() {
+void loop()
+{
   studentNode.sendKeepAlive(3000);
   studentNode.receive24RFNetworkResponse();
   studentNode.sendReadingsRequest(5000);

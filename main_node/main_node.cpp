@@ -8,22 +8,27 @@ PubSubClient client(espClient);
 
 unsigned long last_sent;
 
-MainNode::MainNode(int channel) {
+MainNode::MainNode(int channel)
+{
   _channel = channel;
 }
 
-void MainNode::init() {
+void MainNode::init()
+{
   delay(2000); // delay 2-5s to prevent from running the code twice
   Serial.print(millis());
   Serial.println(F(": Initial node ID set to 00"));
   setupRF24Network();
 }
 
-void MainNode::setupRF24Network() {
+void MainNode::setupRF24Network()
+{
   SPI.begin();
-  if(!radio.begin()){
+  if (!radio.begin())
+  {
     Serial.println(F("Radio hardware not responding!"));
-    while (1){
+    while (1)
+    {
       // hold in infinite loop
     }
   }
@@ -32,29 +37,38 @@ void MainNode::setupRF24Network() {
   network.begin(00);
 }
 
-void MainNode::setupMQTT(char *ssid, char *wifiPassword, char *server, int port) {
+void MainNode::setupMQTT(char *ssid, char *wifiPassword, char *server, int port)
+{
   delay(10);
   WiFi.begin(ssid, wifiPassword);
-  while (WiFi.status() != WL_CONNECTED) {
+  while (WiFi.status() != WL_CONNECTED)
+  {
     delay(500);
   }
   client.setServer(server, port);
 }
 
-void MainNode::receive24RFNetworkMessage() {
+void MainNode::receive24RFNetworkMessage()
+{
   network.update(); // Pump the network regularly
 
-  while (network.available()) { // Is there anything ready for us?
+  while (network.available())
+  { // Is there anything ready for us?
 
     RF24NetworkHeader header; // If so, take a look at it
     network.peek(header);
 
     // the use of switch case is not recommended
-    if(header.type == 'R') handle_R(header);
-    if(header.type == 'B') handle_B(header);
-    if(header.type == 'S') handle_S(header);
-    if(header.type == 'P') handle_P(header);
-    if(header.type != 'R' && header.type != 'B' && header.type != 'S' && header.type != 'P'){
+    if (header.type == 'R')
+      handle_R(header);
+    if (header.type == 'B')
+      handle_B(header);
+    if (header.type == 'S')
+      handle_S(header);
+    if (header.type == 'P')
+      handle_P(header);
+    if (header.type != 'R' && header.type != 'B' && header.type != 'S' && header.type != 'P')
+    {
       Serial.print(F("*** WARNING *** Unknown message type "));
       Serial.println(header.type);
       network.read(header, 0, 0);
@@ -62,7 +76,8 @@ void MainNode::receive24RFNetworkMessage() {
   }
 }
 
-void MainNode::handle_R(RF24NetworkHeader& header) {
+void MainNode::handle_R(RF24NetworkHeader &header)
+{
   network.update();
   Sensor_Node temp;
   network.read(header, &temp, sizeof(temp));
@@ -81,9 +96,11 @@ void MainNode::handle_R(RF24NetworkHeader& header) {
   Serial.println(F("]\""));
 }
 
-void MainNode::handle_B(RF24NetworkHeader& header) {
+void MainNode::handle_B(RF24NetworkHeader &header)
+{
   network.read(header, 0, 0);
-  for (int i = 0; i < MAX_STUDENT_NODES; i++) {
+  for (int i = 0; i < MAX_STUDENT_NODES; i++)
+  {
     network_status[header.from_node - 1].connected_nodes[i].nodeID = 0;
   }
 
@@ -92,12 +109,15 @@ void MainNode::handle_B(RF24NetworkHeader& header) {
   Serial.println(header.from_node);
 }
 
-void MainNode::handle_S(RF24NetworkHeader& header) {
+void MainNode::handle_S(RF24NetworkHeader &header)
+{
   Student_Node message;
   network.read(header, &message, sizeof(message));
-  
-  for (int i = 0; i < MAX_STUDENT_NODES; i++) {
-    if (network_status[header.from_node - 1].connected_nodes[i].nodeID == 0) {
+
+  for (int i = 0; i < MAX_STUDENT_NODES; i++)
+  {
+    if (network_status[header.from_node - 1].connected_nodes[i].nodeID == 0)
+    {
       network_status[header.from_node - 1].connected_nodes[i].nodeID = message.nodeID;
       strcpy(network_status[header.from_node - 1].connected_nodes[i].name, message.name);
       break;
@@ -112,7 +132,8 @@ void MainNode::handle_S(RF24NetworkHeader& header) {
   Serial.println(F(")"));
 }
 
-void MainNode::handle_P(RF24NetworkHeader& header) {
+void MainNode::handle_P(RF24NetworkHeader &header)
+{
   network.read(header, 0, 0);
 
   network_status[header.from_node - 1].status = true;
@@ -123,35 +144,45 @@ void MainNode::handle_P(RF24NetworkHeader& header) {
   Serial.println(header.from_node);
 }
 
-void MainNode::checkNodesConnection(const unsigned long interval) {
-  for (int i = 0; i < MAX_SENSOR_NODES; i++) {
-    if (network_status[i].status && millis() - network_status[i].time > interval) {
+void MainNode::checkNodesConnection(const unsigned long interval)
+{
+  for (int i = 0; i < MAX_SENSOR_NODES; i++)
+  {
+    if (network_status[i].status && millis() - network_status[i].time > interval)
+    {
       network_status[i].status = false;
 
       Serial.print(millis());
       Serial.print(": Node ");
-      Serial.print(i+1);
+      Serial.print(i + 1);
       Serial.println(" removed from active nodes list");
     }
   }
 }
 
-void MainNode::connectPublisher(char *username, char *mqttPassword) {
-  while (!client.connected()) {
-    if (!client.connect("arduinoClient", username, mqttPassword)) {
+void MainNode::connectPublisher(char *username, char *mqttPassword)
+{
+  while (!client.connected())
+  {
+    if (!client.connect("arduinoClient", username, mqttPassword))
+    {
       delay(5000);
     }
   }
   client.loop();
 }
 
-void MainNode::publishNetworkStatus(char *topic, const unsigned long interval) {
+void MainNode::publishNetworkStatus(char *topic, const unsigned long interval)
+{
   unsigned long now = millis();
-  if (now - last_sent > interval) {
+  if (now - last_sent > interval)
+  {
     last_sent = now;
 
-    for (int i = 0; i < MAX_SENSOR_NODES; i++) {
-      if (network_status[i].status) {
+    for (int i = 0; i < MAX_SENSOR_NODES; i++)
+    {
+      if (network_status[i].status)
+      {
         DynamicJsonDocument jsonDoc(512);
         JsonObject root = jsonDoc.to<JsonObject>();
         root["Temp"] = network_status[i].data.temperature;
@@ -160,11 +191,13 @@ void MainNode::publishNetworkStatus(char *topic, const unsigned long interval) {
         JsonArray nodes = root.createNestedArray("Nodes");
 
         JsonObject node = nodes.createNestedObject();
-        node["id"] = "0"+ String(i + 1);
+        node["id"] = "0" + String(i + 1);
         node["name"] = network_status[i].data.name;
 
-        for (int j = 0; j < MAX_STUDENT_NODES; j++) {
-          if (network_status[i].connected_nodes[j].nodeID != 0) {
+        for (int j = 0; j < MAX_STUDENT_NODES; j++)
+        {
+          if (network_status[i].connected_nodes[j].nodeID != 0)
+          {
             JsonObject node = nodes.createNestedObject();
             node["id"] = "0" + String(network_status[i].connected_nodes[j].nodeID, DEC);
             node["name"] = network_status[i].connected_nodes[j].name;
@@ -178,7 +211,7 @@ void MainNode::publishNetworkStatus(char *topic, const unsigned long interval) {
         Serial.print(F(": "));
         Serial.println(jsonString);
 
-        //client.publish(topic, jsonString.c_str());
+        // client.publish(topic, jsonString.c_str());
       }
     }
   }
