@@ -139,3 +139,7 @@ Master's Thesis in Wireless Sensor Networks (WSN) using Arduino boards, nRF24L01
 19/04/2024
 - Updated the node-red dashboard tree to include an image for each node
 - The code of the node-red was simplified
+
+20/04/2024
+- Simplified the node-red code and solved the main bugs
+- Don't forget to link https://gist.github.com/mbostock/4339083
