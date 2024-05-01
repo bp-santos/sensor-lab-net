@@ -4,16 +4,7 @@
 #include <RF24.h>
 #include <RF24Network.h>
 
-char *ssid = "Bernardo";
-char *wifiPassword = "12345678";
-char *server = "b37.mqtt.one";
-short port = 1883;
-char *username = "29adpt5613";
-char *mqttPassword = "178ahilorw";
-char *topic = "29adpt5613/home";
-
-MainNode mainNode(90); // (channel)
-const unsigned long interval = 5000;
+MainNode mainNode(90, "NOS-0856", "FG94RWP5", "192.168.1.28", 1883, "Main Node"); // (channel, ssid, wifiPassword, server, port, topic)
 
 void setup()
 {
@@ -23,13 +14,12 @@ void setup()
     // some boards need this because of native USB capability
   }
   mainNode.init();
-  // mainNode.setupMQTT(ssid, wifiPassword, server, port);
 }
 
 void loop()
 {
+  mainNode.checkMQTTConnection();
   mainNode.receive24RFNetworkMessage();
   mainNode.checkNodesConnection(10000);
-  // mainNode.connectPublisher(username, mqttPassword);
-  mainNode.publishNetworkStatus(topic, interval);
+  mainNode.publishNetworkStatus(5000);
 }

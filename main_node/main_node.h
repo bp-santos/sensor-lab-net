@@ -38,16 +38,22 @@ extern Network_Status network_status[MAX_SENSOR_NODES];
 class MainNode
 {
 public:
-  MainNode(int channel);
+  MainNode(int channel, char *ssid, char *wifiPassword, char *server, short port, char *topic);
   void init();
-  void setupMQTT(char *ssid, char *wifiPassword, char *server, int port);
+  void checkMQTTConnection();
   void receive24RFNetworkMessage();
-  void connectPublisher(char *username, char *mqttPassword);
-  void publishNetworkStatus(char *topic, const unsigned long interval);
+  void publishNetworkStatus(const unsigned long interval);
   void checkNodesConnection(const unsigned long interval);
 
 private:
   int _channel;
+  char *_ssid;
+  char *_wifiPassword;
+  char *_server;
+  short _port;
+  char *_topic;
+  void setupWiFi();
+  void setupMQTT();
   void setupRF24Network();
   void handle_R(RF24NetworkHeader &header);
   void handle_B(RF24NetworkHeader &header);

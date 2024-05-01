@@ -43,166 +43,6 @@
     "h": 122
   },
   {
-    "id": "59ba7567e3379b0d",
-    "type": "mqtt-broker",
-    "name": "",
-    "broker": "b37.mqtt.one",
-    "port": "1883",
-    "clientid": "",
-    "autoConnect": true,
-    "usetls": false,
-    "protocolVersion": "4",
-    "keepalive": "60",
-    "cleansession": true,
-    "autoUnsubscribe": true,
-    "birthTopic": "",
-    "birthQos": "0",
-    "birthRetain": "false",
-    "birthPayload": "",
-    "birthMsg": {},
-    "closeTopic": "",
-    "closeQos": "0",
-    "closeRetain": "false",
-    "closePayload": "",
-    "closeMsg": {},
-    "willTopic": "",
-    "willQos": "0",
-    "willRetain": "false",
-    "willPayload": "",
-    "willMsg": {},
-    "userProps": "",
-    "sessionExpiry": ""
-  },
-  {
-    "id": "cf2ec7fa21d955bd",
-    "type": "ui_base",
-    "theme": {
-      "name": "theme-light",
-      "lightTheme": {
-        "default": "#0094CE",
-        "baseColor": "#0094CE",
-        "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif",
-        "edited": true,
-        "reset": false
-      },
-      "darkTheme": {
-        "default": "#097479",
-        "baseColor": "#097479",
-        "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif",
-        "edited": true,
-        "reset": false
-      },
-      "customTheme": {
-        "name": "Untitled Theme 1",
-        "default": "#4B7930",
-        "baseColor": "#4B7930",
-        "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif"
-      },
-      "themeState": {
-        "base-color": {
-          "default": "#0094CE",
-          "value": "#0094CE",
-          "edited": true
-        },
-        "page-titlebar-backgroundColor": {
-          "value": "#0094CE",
-          "edited": false
-        },
-        "page-backgroundColor": {
-          "value": "#fafafa",
-          "edited": false
-        },
-        "page-sidebar-backgroundColor": {
-          "value": "#ffffff",
-          "edited": false
-        },
-        "group-textColor": {
-          "value": "#1bbfff",
-          "edited": false
-        },
-        "group-borderColor": {
-          "value": "#ffffff",
-          "edited": false
-        },
-        "group-backgroundColor": {
-          "value": "#ffffff",
-          "edited": false
-        },
-        "widget-textColor": {
-          "value": "#111111",
-          "edited": false
-        },
-        "widget-backgroundColor": {
-          "value": "#0094ce",
-          "edited": false
-        },
-        "widget-borderColor": {
-          "value": "#ffffff",
-          "edited": false
-        },
-        "base-font": {
-          "value": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif"
-        }
-      },
-      "angularTheme": {
-        "primary": "indigo",
-        "accents": "blue",
-        "warn": "red",
-        "background": "grey",
-        "palette": "light"
-      }
-    },
-    "site": {
-      "name": "Node-RED Dashboard",
-      "hideToolbar": "false",
-      "allowSwipe": "false",
-      "lockMenu": "false",
-      "allowTempTheme": "true",
-      "dateFormat": "DD/MM/YYYY",
-      "sizes": {
-        "sx": 48,
-        "sy": 48,
-        "gx": 6,
-        "gy": 6,
-        "cx": 6,
-        "cy": 6,
-        "px": 0,
-        "py": 0
-      }
-    }
-  },
-  {
-    "id": "8d7d3433d07c904d",
-    "type": "ui_tab",
-    "name": "Applications and Computation for the Internet of Things",
-    "icon": "dashboard",
-    "order": 1,
-    "disabled": false,
-    "hidden": false
-  },
-  {
-    "id": "57c95d82f8b6e821",
-    "type": "ui_group",
-    "name": "Sensor Node 01",
-    "tab": "8d7d3433d07c904d",
-    "order": 1,
-    "disp": true,
-    "width": "8",
-    "collapse": true,
-    "className": ""
-  },
-  {
-    "id": "e5922190928d13c3",
-    "type": "ui_group",
-    "name": "Network Status",
-    "tab": "8d7d3433d07c904d",
-    "order": 5,
-    "disp": true,
-    "width": "18",
-    "collapse": true,
-    "className": ""
-  },
-  {
     "id": "9ede17af4febdbf3",
     "type": "function",
     "z": "c3cbf231de665554",
@@ -242,7 +82,7 @@
     "z": "c3cbf231de665554",
     "g": "06badfa7a9ad63f9",
     "name": "Nodes",
-    "func": "function getParent(node) {\n  return \"0\" + node.slice(-1 * (node.length - 2));\n}\n\nfunction addNode(node) {\n  if (node.id.length == 2) {\n    tree.children.push({ name: node.name, id: node.id, children: [] });\n  }\n\n  if (node.id.length == 3) { //011\n    const level1 = tree.children.find(child => child.id == getParent(node.id)); // encontra 01\n    level1.children.push({ name: node.name, id: node.id, children: [] }); // cria 011\n  }\n\n  if (node.id.length == 4) { // 0111\n    let level1 = tree.children.find(child => child.id == getParent(getParent(node.id))); // encontra 01\n    let level2 = level1.children.find(child => child.id == getParent(node.id)); // econtra 011\n    level2.children.push({ name: node.name, id: node.id, children: [] }); // adiciona 0111\n  }\n\n  if (node.id.length == 5) { // 01111\n    let level1 = tree.children.find(child => child.id == getParent(getParent(getParent(node.id)))); // encontra 01\n    let level2 = level1.children.find(child => child.id == getParent(getParent(node.id))); // encontra 011\n    let level3 = level2.children.find(child => child.id == getParent(node.id)); // encontra 0111\n    level3.children.push({ name: node.name, id: node.id, children: [] }); // adiciona 01111\n  }\n}\n\nconst data = JSON.parse(msg.payload);\nlet tree = { name: \"Main Node\", id: \"00\", children: [] };\n\nfunction removeEmptyChildren(node) {\n  if (node.children.length === 0) {\n    delete node.children; // Remove the 'children' property if it's empty\n  } else {\n    // Recursively remove empty children for each child node\n    node.children.forEach(removeEmptyChildren);\n  }\n}\n\ndata.Nodes.forEach(addNode);\nremoveEmptyChildren(tree);\nmsg.payload = tree;\nreturn msg;",
+    "func": "function getParent(node) {\n  return \"0\" + node.slice(-1 * (node.length - 2));\n}\n\nfunction addNode(node) {\n  if (node.id.length == 2) {\n    tree.children.push({ name: node.name, id: node.id, children: [] });\n  }\n\n  if (node.id.length == 3) { //011\n    const level1 = tree.children.find(child => child.id == getParent(node.id)); // encontra 01\n    level1.children.push({ name: node.name, id: node.id, children: [] }); // cria 011\n  }\n\n  if (node.id.length == 4) { // 0111\n    let level1 = tree.children.find(child => child.id == getParent(getParent(node.id))); // encontra 01\n    let level2 = level1.children.find(child => child.id == getParent(node.id)); // econtra 011\n    level2.children.push({ name: node.name, id: node.id, children: [] }); // adiciona 0111\n  }\n\n  if (node.id.length == 5) { // 01111\n    let level1 = tree.children.find(child => child.id == getParent(getParent(getParent(node.id)))); // encontra 01\n    let level2 = level1.children.find(child => child.id == getParent(getParent(node.id))); // encontra 011\n    let level3 = level2.children.find(child => child.id == getParent(node.id)); // encontra 0111\n    level3.children.push({ name: node.name, id: node.id, children: [] }); // adiciona 01111\n  }\n}\n\nfunction removeEmptyChildren(node) {\n  if (node.children.length === 0) {\n    delete node.children;\n  } else {\n    node.children.forEach(removeEmptyChildren);\n  }\n}\n\nconst data = JSON.parse(msg.payload);\nlet tree = { name: \"Main Node\", id: \"00\", children: [] };\n\ndata.Nodes.forEach(addNode);\nremoveEmptyChildren(tree);\nmsg.payload = tree;\nreturn msg;",
     "outputs": 1,
     "timeout": 0,
     "noerr": 0,
@@ -252,44 +92,6 @@
     "x": 390,
     "y": 340,
     "wires": [["5d63e9d1ac9184a4"]]
-  },
-  {
-    "id": "6912f0c9b9488794",
-    "type": "mqtt in",
-    "z": "c3cbf231de665554",
-    "name": "",
-    "topic": "29adpt5613/home",
-    "qos": "2",
-    "datatype": "auto-detect",
-    "broker": "59ba7567e3379b0d",
-    "nl": false,
-    "rap": true,
-    "rh": 0,
-    "inputs": 0,
-    "x": 150,
-    "y": 220,
-    "wires": [["9ede17af4febdbf3", "1e460769578da2a7", "27c1abf43ac1d0c1"]]
-  },
-  {
-    "id": "d78b63344d4b4964",
-    "type": "inject",
-    "z": "c3cbf231de665554",
-    "name": "",
-    "props": [
-      {
-        "p": "payload"
-      }
-    ],
-    "repeat": "",
-    "crontab": "",
-    "once": false,
-    "onceDelay": 0.1,
-    "topic": "",
-    "payload": "{\"Temp\":25,\"Light\":500,\"Nodes\":[{\"id\":\"01\",\"name\":\"NODE01\"},{\"id\":\"021\",\"name\":\"NODE021\"},{\"id\":\"031\",\"name\":\"NODE031\"},{\"id\":\"041\",\"name\":\"NODE041\"},{\"id\":\"051\",\"name\":\"NODE051\"},{\"id\":\"0121\",\"name\":\"NODE0121\"},{\"id\":\"0221\",\"name\":\"NODE0221\"},{\"id\":\"0321\",\"name\":\"NODE0321\"},{\"id\":\"0421\",\"name\":\"NODE0421\"},{\"id\":\"0521\",\"name\":\"NODE0521\"},{\"id\":\"0131\",\"name\":\"NODE0131\"},{\"id\":\"0231\",\"name\":\"NODE0231\"},{\"id\":\"0331\",\"name\":\"NODE0331\"},{\"id\":\"0431\",\"name\":\"NODE0431\"},{\"id\":\"0531\",\"name\":\"NODE0531\"},{\"id\":\"0141\",\"name\":\"NODE0141\"},{\"id\":\"0241\",\"name\":\"NODE0241\"},{\"id\":\"0341\",\"name\":\"NODE0341\"},{\"id\":\"0441\",\"name\":\"NODE0441\"},{\"id\":\"0541\",\"name\":\"NODE0541\"},{\"id\":\"0151\",\"name\":\"NODE0151\"},{\"id\":\"0251\",\"name\":\"NODE0251\"},{\"id\":\"0351\",\"name\":\"NODE0351\"},{\"id\":\"0451\",\"name\":\"NODE0451\"},{\"id\":\"0551\",\"name\":\"NODE0551\"},{\"id\":\"01121\",\"name\":\"NODE01121\"},{\"id\":\"02121\",\"name\":\"NODE02121\"},{\"id\":\"03121\",\"name\":\"NODE03121\"},{\"id\":\"04121\",\"name\":\"NODE04121\"},{\"id\":\"05121\",\"name\":\"NODE05121\"},{\"id\":\"01221\",\"name\":\"NODE01221\"},{\"id\":\"02221\",\"name\":\"NODE02221\"},{\"id\":\"03221\",\"name\":\"NODE03221\"},{\"id\":\"04221\",\"name\":\"NODE04221\"},{\"id\":\"05221\",\"name\":\"NODE05221\"},{\"id\":\"01321\",\"name\":\"NODE01321\"},{\"id\":\"02321\",\"name\":\"NODE02321\"},{\"id\":\"03321\",\"name\":\"NODE03321\"},{\"id\":\"04321\",\"name\":\"NODE04321\"},{\"id\":\"05321\",\"name\":\"NODE05321\"},{\"id\":\"01421\",\"name\":\"NODE01421\"},{\"id\":\"02421\",\"name\":\"NODE02421\"},{\"id\":\"03421\",\"name\":\"NODE03421\"},{\"id\":\"04421\",\"name\":\"NODE04421\"},{\"id\":\"05421\",\"name\":\"NODE05421\"},{\"id\":\"01521\",\"name\":\"NODE01521\"},{\"id\":\"02521\",\"name\":\"NODE02521\"},{\"id\":\"03521\",\"name\":\"NODE03521\"},{\"id\":\"04521\",\"name\":\"NODE04521\"},{\"id\":\"05521\",\"name\":\"NODE05521\"},{\"id\":\"01131\",\"name\":\"NODE01131\"},{\"id\":\"02131\",\"name\":\"NODE02131\"},{\"id\":\"03131\",\"name\":\"NODE03131\"},{\"id\":\"04131\",\"name\":\"NODE04131\"},{\"id\":\"05131\",\"name\":\"NODE05131\"},{\"id\":\"01231\",\"name\":\"NODE01231\"},{\"id\":\"02231\",\"name\":\"NODE02231\"},{\"id\":\"03231\",\"name\":\"NODE03231\"},{\"id\":\"04231\",\"name\":\"NODE04231\"},{\"id\":\"05231\",\"name\":\"NODE05231\"},{\"id\":\"01331\",\"name\":\"NODE01331\"},{\"id\":\"02331\",\"name\":\"NODE02331\"},{\"id\":\"03331\",\"name\":\"NODE03331\"},{\"id\":\"04331\",\"name\":\"NODE04331\"},{\"id\":\"05331\",\"name\":\"NODE05331\"},{\"id\":\"01431\",\"name\":\"NODE01431\"},{\"id\":\"02431\",\"name\":\"NODE02431\"},{\"id\":\"03431\",\"name\":\"NODE03431\"},{\"id\":\"04431\",\"name\":\"NODE04431\"},{\"id\":\"05431\",\"name\":\"NODE05431\"},{\"id\":\"01531\",\"name\":\"NODE01531\"},{\"id\":\"02531\",\"name\":\"NODE02531\"},{\"id\":\"03531\",\"name\":\"NODE03531\"},{\"id\":\"04531\",\"name\":\"NODE04531\"},{\"id\":\"05531\",\"name\":\"NODE05531\"},{\"id\":\"01141\",\"name\":\"NODE01141\"},{\"id\":\"02141\",\"name\":\"NODE02141\"},{\"id\":\"03141\",\"name\":\"NODE03141\"},{\"id\":\"04141\",\"name\":\"NODE04141\"},{\"id\":\"05141\",\"name\":\"NODE05141\"},{\"id\":\"01241\",\"name\":\"NODE01241\"},{\"id\":\"02241\",\"name\":\"NODE02241\"},{\"id\":\"03241\",\"name\":\"NODE03241\"},{\"id\":\"04241\",\"name\":\"NODE04241\"},{\"id\":\"05241\",\"name\":\"NODE05241\"},{\"id\":\"01341\",\"name\":\"NODE01341\"},{\"id\":\"02341\",\"name\":\"NODE02341\"},{\"id\":\"03341\",\"name\":\"NODE03341\"},{\"id\":\"04341\",\"name\":\"NODE04341\"},{\"id\":\"05341\",\"name\":\"NODE05341\"},{\"id\":\"01441\",\"name\":\"NODE01441\"},{\"id\":\"02441\",\"name\":\"NODE02441\"},{\"id\":\"03441\",\"name\":\"NODE03441\"},{\"id\":\"04441\",\"name\":\"NODE04441\"},{\"id\":\"05441\",\"name\":\"NODE05441\"},{\"id\":\"01541\",\"name\":\"NODE01541\"},{\"id\":\"02541\",\"name\":\"NODE02541\"},{\"id\":\"03541\",\"name\":\"NODE03541\"},{\"id\":\"04541\",\"name\":\"NODE04541\"},{\"id\":\"05541\",\"name\":\"NODE05541\"},{\"id\":\"01151\",\"name\":\"NODE01151\"},{\"id\":\"02151\",\"name\":\"NODE02151\"},{\"id\":\"03151\",\"name\":\"NODE03151\"},{\"id\":\"04151\",\"name\":\"NODE04151\"},{\"id\":\"05151\",\"name\":\"NODE05151\"},{\"id\":\"01251\",\"name\":\"NODE01251\"},{\"id\":\"02251\",\"name\":\"NODE02251\"},{\"id\":\"03251\",\"name\":\"NODE03251\"},{\"id\":\"04251\",\"name\":\"NODE04251\"},{\"id\":\"05251\",\"name\":\"NODE05251\"},{\"id\":\"01351\",\"name\":\"NODE01351\"},{\"id\":\"02351\",\"name\":\"NODE02351\"},{\"id\":\"03351\",\"name\":\"NODE03351\"},{\"id\":\"04351\",\"name\":\"NODE04351\"},{\"id\":\"05351\",\"name\":\"NODE05351\"},{\"id\":\"01451\",\"name\":\"NODE01451\"},{\"id\":\"02451\",\"name\":\"NODE02451\"},{\"id\":\"03451\",\"name\":\"NODE03451\"},{\"id\":\"04451\",\"name\":\"NODE04451\"},{\"id\":\"05451\",\"name\":\"NODE05451\"},{\"id\":\"01551\",\"name\":\"NODE01551\"},{\"id\":\"02551\",\"name\":\"NODE02551\"},{\"id\":\"03551\",\"name\":\"NODE03551\"},{\"id\":\"04551\",\"name\":\"NODE04551\"},{\"id\":\"05551\",\"name\":\"NODE05551\"}]}",
-    "payloadType": "str",
-    "x": 190,
-    "y": 120,
-    "wires": [["9ede17af4febdbf3", "1e460769578da2a7", "27c1abf43ac1d0c1"]]
   },
   {
     "id": "3797f22e62926862",
@@ -471,24 +273,105 @@
     "wires": [[]]
   },
   {
-    "id": "24be47ac4b6ec0c9",
-    "type": "inject",
+    "id": "a9c29da1d6a570ee",
+    "type": "mqtt in",
     "z": "c3cbf231de665554",
     "name": "",
-    "props": [
-      {
-        "p": "payload"
-      }
-    ],
-    "repeat": "",
-    "crontab": "",
-    "once": false,
-    "onceDelay": 0.1,
-    "topic": "",
-    "payload": "{\"Temp\":25,\"Light\":500,\"Nodes\":[{\"id\":\"01\",\"name\":\"NODE01\"},{\"id\":\"021\",\"name\":\"NODE021\"}]}",
-    "payloadType": "str",
-    "x": 170,
-    "y": 360,
-    "wires": [["27c1abf43ac1d0c1"]]
+    "topic": "Main Node",
+    "qos": "2",
+    "datatype": "utf8",
+    "broker": "54f63f95cb7e711b",
+    "nl": false,
+    "rap": true,
+    "rh": 0,
+    "inputs": 0,
+    "x": 200,
+    "y": 220,
+    "wires": [
+      [
+        "9ede17af4febdbf3",
+        "1e460769578da2a7",
+        "27c1abf43ac1d0c1",
+        "0304d23a693b4eae"
+      ]
+    ]
+  },
+  {
+    "id": "0304d23a693b4eae",
+    "type": "debug",
+    "z": "c3cbf231de665554",
+    "name": "debug 1",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "false",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 400,
+    "y": 460,
+    "wires": []
+  },
+  {
+    "id": "57c95d82f8b6e821",
+    "type": "ui_group",
+    "name": "Sensor Node 01",
+    "tab": "8d7d3433d07c904d",
+    "order": 1,
+    "disp": true,
+    "width": "8",
+    "collapse": true,
+    "className": ""
+  },
+  {
+    "id": "e5922190928d13c3",
+    "type": "ui_group",
+    "name": "Network Status",
+    "tab": "8d7d3433d07c904d",
+    "order": 5,
+    "disp": true,
+    "width": "18",
+    "collapse": true,
+    "className": ""
+  },
+  {
+    "id": "54f63f95cb7e711b",
+    "type": "mqtt-broker",
+    "name": "localhost",
+    "broker": "localhost",
+    "port": "1883",
+    "clientid": "",
+    "autoConnect": true,
+    "usetls": false,
+    "protocolVersion": "4",
+    "keepalive": "60",
+    "cleansession": true,
+    "autoUnsubscribe": true,
+    "birthTopic": "",
+    "birthQos": "0",
+    "birthRetain": "false",
+    "birthPayload": "",
+    "birthMsg": {},
+    "closeTopic": "",
+    "closeQos": "0",
+    "closeRetain": "false",
+    "closePayload": "",
+    "closeMsg": {},
+    "willTopic": "",
+    "willQos": "0",
+    "willRetain": "false",
+    "willPayload": "",
+    "willMsg": {},
+    "userProps": "",
+    "sessionExpiry": ""
+  },
+  {
+    "id": "8d7d3433d07c904d",
+    "type": "ui_tab",
+    "name": "Applications and Computation for the Internet of Things",
+    "icon": "dashboard",
+    "order": 1,
+    "disabled": false,
+    "hidden": false
   }
 ]

@@ -8,17 +8,56 @@ PubSubClient client(espClient);
 
 unsigned long last_sent;
 
-MainNode::MainNode(int channel)
+MainNode::MainNode(int channel, char *ssid, char *wifiPassword, char *server, short port, char *topic)
 {
   _channel = channel;
+  _ssid = ssid;
+  _wifiPassword = wifiPassword;
+  _server = server;
+  _port = port;
+  _topic = topic;
 }
 
 void MainNode::init()
 {
   delay(2000); // delay 2-5s to prevent from running the code twice
+
+  setupWiFi();
+  client.setServer(_server, _port);
+
   Serial.print(millis());
   Serial.println(F(": Initial node ID set to 00"));
   setupRF24Network();
+}
+
+void MainNode::setupWiFi()
+{
+  Serial.println("Attempting WiFi connection...");
+  WiFi.begin(_ssid, _wifiPassword);       // Attempt to connect
+  while (WiFi.status() != WL_CONNECTED) // Loop until we're reconnected
+  {
+    Serial.print(F("WiFi connection failed, rc="));
+    Serial.print(WiFi.status());
+    Serial.println(F(" try again in 5 seconds"));
+
+    delay(5000); // Wait 5 seconds before retrying
+  }
+}
+
+void MainNode::setupMQTT()
+{
+  while (!client.connected()) // Loop until we're reconnected
+  {
+    Serial.println("Attempting MQTT connection...");
+    if (!client.connect("arduinoClient")) // Attempt to connect
+    {
+      Serial.print(F("MQTT connection failed, rc="));
+      Serial.print(client.state());
+      Serial.println(F(" try again in 5 seconds"));
+
+      delay(5000); // Wait 5 seconds before retrying
+    }
+  }
 }
 
 void MainNode::setupRF24Network()
@@ -37,15 +76,13 @@ void MainNode::setupRF24Network()
   network.begin(00);
 }
 
-void MainNode::setupMQTT(char *ssid, char *wifiPassword, char *server, int port)
+void MainNode::checkMQTTConnection()
 {
-  delay(10);
-  WiFi.begin(ssid, wifiPassword);
-  while (WiFi.status() != WL_CONNECTED)
+  if (!client.connected())
   {
-    delay(500);
+    setupMQTT();
   }
-  client.setServer(server, port);
+  client.loop();
 }
 
 void MainNode::receive24RFNetworkMessage()
@@ -153,27 +190,25 @@ void MainNode::checkNodesConnection(const unsigned long interval)
       network_status[i].status = false;
 
       Serial.print(millis());
-      Serial.print(": Node ");
+      Serial.print(F(": Node "));
       Serial.print(i + 1);
-      Serial.println(" removed from active nodes list");
+      Serial.println(F(" removed from active nodes list"));
     }
   }
 }
 
-void MainNode::connectPublisher(char *username, char *mqttPassword)
+void MainNode::publishNetworkStatus(const unsigned long interval)
 {
-  while (!client.connected())
-  {
-    if (!client.connect("arduinoClient", username, mqttPassword))
-    {
-      delay(5000);
-    }
-  }
-  client.loop();
-}
+  network_status[0].status = true;
+  network_status[0].data.temperature = 25;
+  network_status[0].data.phototransistor = 100;
+  memcpy(network_status[0].data.name, "NODE01", NAME_LENGTH);
+  network_status[0].time = millis();
+  network_status[0].connected_nodes[0].nodeID = 21;
+  network_status[0].connected_nodes[0].name[0] = 'BERN01';
+  network_status[0].connected_nodes[1].nodeID = 31;
+  network_status[0].connected_nodes[1].name[0] = 'BERN02';
 
-void MainNode::publishNetworkStatus(char *topic, const unsigned long interval)
-{
   unsigned long now = millis();
   if (now - last_sent > interval)
   {
@@ -211,7 +246,7 @@ void MainNode::publishNetworkStatus(char *topic, const unsigned long interval)
         Serial.print(F(": "));
         Serial.println(jsonString);
 
-        // client.publish(topic, jsonString.c_str());
+        client.publish(_topic, jsonString.c_str());
       }
     }
   }

@@ -4,13 +4,21 @@ Master's Thesis in Wireless Sensor Networks (WSN) using Arduino boards, nRF24L01
 ## Advisor comments
 - medir a carga util dos 01-05
 - problema de saturacao da rede
-- pq e q o no 00 nao faz a gestao toda e é dividida entre o 01 e o 05
-- medir data rate entre nos na avaliacao de desempenho
+    - pq e q o no 00 nao faz a gestao toda e é dividida entre o 01 e o 05
+    - medir data rate entre nos na avaliacao de desempenho
 - nicla vision arduino, arducam mini rb-adu-20, sen0158 dfrobot
+- relacionar alguns dos modos com o que existe já nas tecnologias de computadores
+    - correspondencia entre id e nome lógico - sistemas distribuidos - serviços de nomes
+    - endereçamento de nós
+- a funcionalidade das bibliotecas tem de mimicar a biblioteca wire
 
 ## To-do
 - poder gerar mais que um alerta por estudante
-- o student-node deve usar um endianess diferente das outras boards por isso os readings ficam todos diferentes}
+- o student-node deve usar um endianess diferente das outras boards por isso os readings ficam todos diferentes
+- mudar a cor dos nós no dashboard
+- descrição de cada nó para saber a localização geográfica
+- GXX-IXX - nome a atribuir
+- Simplificar as bibliotecas e usar espécie de heranças
 
 ## Logs
 
@@ -125,7 +133,7 @@ Master's Thesis in Wireless Sensor Networks (WSN) using Arduino boards, nRF24L01
 
 17/04/2024
 - Sensor_Values refactor to Sensor_Node which now includes a name for the node for better understanding.
-- When sending sensor data, the sensor node also sends its name for id.
+- When sending sensor data, the sensor node also sends its name.
 - The student nodes are also sending their name to their sensor node for better understanding.
 - Refactoring of Sensor_Node to include the new structure Node important to easily send the connected nodes and their name between the sensor node and the main node.
 - Changed the data that is going to be transmitted via MQTT to include the names of every node.
@@ -143,3 +151,9 @@ Master's Thesis in Wireless Sensor Networks (WSN) using Arduino boards, nRF24L01
 20/04/2024
 - Simplified the node-red code and solved the main bugs
 - Don't forget to link https://gist.github.com/mbostock/4339083
+
+01/05/2024
+- The code of the node-red was adjusted for a local MQTT broker
+- MQTT code from https://github.com/knolleary/pubsubclient/blob/master/examples/mqtt_basic/mqtt_basic.ino
+- Reorganized MQTT logic on main-node
+- Started Lab 1 guide from ACIC lectures
