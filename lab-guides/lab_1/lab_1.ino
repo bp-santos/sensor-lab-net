@@ -1,14 +1,22 @@
 #include <WiFi.h>
 #include <PubSubClient.h>
 
+#define GREEN 5
+#define RED 4
+#define BLUE 3
+#define YELLOW 2
+#define NONE 0
+
 WiFiClient espClient;
 PubSubClient client(espClient);
 
-char *ssid = "NOS-0856";  // Does not work on 5Ghz networks
-char *wifiPassword = "FG94RWP5"; 
-char *server = "192.168.1.28";
+char *ssid = "NOS-E914"; // Does not work on 5Ghz networks
+char *wifiPassword = "FUACPFMP";
+char *server = "192.168.1.125";
 short port = 1883;
-char *topic = "Lab 1";  // Change it to your student ID
+char *topic = "Lab 1"; // Change it to your student ID
+
+bool stop = false;
 
 void setup()
 {
@@ -20,6 +28,7 @@ void setup()
   setupWiFi(ssid, wifiPassword);
   client.setServer(server, port);
   client.setCallback(callback);
+  setupLEDs();
 }
 
 void loop()
@@ -29,6 +38,7 @@ void loop()
     reconnect();
   }
   client.loop();
+  loopLEDs();
 }
 
 void setupWiFi(char *ssid, char *wifiPassword)
@@ -43,6 +53,14 @@ void setupWiFi(char *ssid, char *wifiPassword)
 
     delay(5000); // Wait 5 seconds before retrying
   }
+}
+
+void setupLEDs()
+{
+  pinMode(5, OUTPUT);
+  pinMode(4, OUTPUT);
+  pinMode(3, OUTPUT);
+  pinMode(2, OUTPUT);
 }
 
 void reconnect()
@@ -67,9 +85,40 @@ void callback(char *topic, byte *payload, unsigned int length)
   Serial.print(F("Message arrived ["));
   Serial.print(topic);
   Serial.print(F("] "));
+
+  String message;
   for (int i = 0; i < length; i++)
   {
-    Serial.print((char)payload[i]);
+    message += (char)payload[i];
   }
-  Serial.println();
+
+  Serial.println(message);
+  stop = message.toInt();
+}
+
+void loopLEDs()
+{
+  int LEDs[] = {RED, GREEN, BLUE, YELLOW, NONE};
+
+  for (int i = 0; i <= 4; i++)
+  {
+    if (LEDs[i] != NONE)
+    {
+      digitalWrite(LEDs[i], HIGH);
+      delay(1000);
+    }
+    else
+    {
+      delay(1000);
+    }
+
+    client.loop();
+    while (stop)
+    {
+      client.loop();
+      delay(100);
+    }
+
+    digitalWrite(LEDs[i], LOW);
+  }
 }

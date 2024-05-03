@@ -157,3 +157,7 @@ Master's Thesis in Wireless Sensor Networks (WSN) using Arduino boards, nRF24L01
 - MQTT code from https://github.com/knolleary/pubsubclient/blob/master/examples/mqtt_basic/mqtt_basic.ino
 - Reorganized MQTT logic on main-node
 - Started Lab 1 guide from ACIC lectures
+
+03/05/2024
+- Finished Lab 1 code from ACIC lectures
+- Simplified lab-setup.txt
