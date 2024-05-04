@@ -4,7 +4,15 @@
 #include <RF24.h>
 #include <RF24Network.h>
 
-MainNode mainNode(90, "NOS-0856", "FG94RWP5", "192.168.1.28", 1883, "Main Node"); // (channel, ssid, wifiPassword, server, port, topic)
+uint16_t node = 00;
+int channel = 90;
+char *ssid = "NOS-0856";
+char *wifiPassword = "FG94RWP5";
+char *server = "192.168.1.28";
+short port = 1883;
+char *topic = "Main Node";
+
+MainNode mainNode(node, channel, ssid, wifiPassword, server, port, topic);
 
 void setup()
 {
@@ -19,7 +27,7 @@ void setup()
 void loop()
 {
   mainNode.checkMQTTConnection();
-  mainNode.receive24RFNetworkMessage();
-  mainNode.checkNodesConnection(10000);
-  mainNode.publishNetworkStatus(5000);
+  mainNode.receivePayload();
+  mainNode.checkNodesConnection();
+  mainNode.publishNetworkStatus();
 }

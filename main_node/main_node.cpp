@@ -1,65 +1,43 @@
 #include "main_node.h"
 
-Network_Status network_status[MAX_SENSOR_NODES];
-RF24 radio(7, 8);
-RF24Network network(radio);
-WiFiClient espClient;
-PubSubClient client(espClient);
-
-unsigned long last_sent;
-
-MainNode::MainNode(int channel, char *ssid, char *wifiPassword, char *server, short port, char *topic)
+/// @brief Constructor for the MainNode class.
+/// @param node  The node ID of the main node.
+/// @param channel  The RF24 channel to use.
+/// @param ssid  The WiFi SSID to connect to.
+/// @param wifiPassword  The WiFi password to use.
+/// @param server  The MQTT server to connect to.
+/// @param port  The MQTT server port to connect to.
+/// @param topic  The MQTT topic to publish to.
+MainNode::MainNode(uint16_t node, int channel, char *ssid, char *wifiPassword, char *server, short port, char *topic)
+    : radio(RADIO_CE_PIN, RADIO_CSN_PIN), network(radio), client(espClient), _node(node), _channel(channel), _ssid(ssid), _wifiPassword(wifiPassword), _server(server), _port(port), _topic(topic)
 {
-  _channel = channel;
-  _ssid = ssid;
-  _wifiPassword = wifiPassword;
-  _server = server;
-  _port = port;
-  _topic = topic;
 }
 
+/// @brief Initializes the main node.
+/// @details This function initializes the main node by setting up the WiFi connection, the RF24 network, and the MQTT connection.
 void MainNode::init()
 {
-  delay(2000); // delay 2-5s to prevent from running the code twice
-
+  delay(INIT_DELAY); // delay 2-5s to prevent from running the code twice
   setupWiFi();
   client.setServer(_server, _port);
-
-  Serial.print(millis());
-  Serial.println(F(": Initial node ID set to 00"));
+  log(F(": Node ID set to "), _node);
   setupRF24Network();
 }
 
+/// @brief Sets up the WiFi connection.
 void MainNode::setupWiFi()
 {
-  Serial.println("Attempting WiFi connection...");
-  WiFi.begin(_ssid, _wifiPassword);       // Attempt to connect
+  log(F(": Attempting WiFi connection..."));
+  WiFi.begin(_ssid, _wifiPassword);     // Attempt to connect
   while (WiFi.status() != WL_CONNECTED) // Loop until we're reconnected
   {
-    Serial.print(F("WiFi connection failed, rc="));
-    Serial.print(WiFi.status());
-    Serial.println(F(" try again in 5 seconds"));
-
-    delay(5000); // Wait 5 seconds before retrying
+    log(F(": WiFi connection failed, rc="), WiFi.status(), F(" try again in 5 seconds"));
+    delay(WIFI_CONNECT_DELAY); // Wait 5 seconds before retrying
   }
 }
 
-void MainNode::setupMQTT()
-{
-  while (!client.connected()) // Loop until we're reconnected
-  {
-    Serial.println("Attempting MQTT connection...");
-    if (!client.connect("arduinoClient")) // Attempt to connect
-    {
-      Serial.print(F("MQTT connection failed, rc="));
-      Serial.print(client.state());
-      Serial.println(F(" try again in 5 seconds"));
-
-      delay(5000); // Wait 5 seconds before retrying
-    }
-  }
-}
-
+/// @brief Sets up the RF24Network for the main node.
+/// @details This function initializes the SPI and the radio hardware.
 void MainNode::setupRF24Network()
 {
   SPI.begin();
@@ -71,11 +49,12 @@ void MainNode::setupRF24Network()
       // hold in infinite loop
     }
   }
-  radio.setPALevel(RF24_PA_HIGH);
+  radio.setPALevel(RF24_PA_LEVEL);
   radio.setChannel(_channel);
-  network.begin(00);
+  network.begin(_node);
 }
 
+/// @brief Checks the MQTT connection.
 void MainNode::checkMQTTConnection()
 {
   if (!client.connected())
@@ -85,10 +64,26 @@ void MainNode::checkMQTTConnection()
   client.loop();
 }
 
-void MainNode::receive24RFNetworkMessage()
+/// @brief Sets up the MQTT connection.
+void MainNode::setupMQTT()
+{
+  while (!client.connected()) // Loop until we're reconnected
+  {
+    log(F(": Attempting MQTT connection..."));
+    if (!client.connect("arduinoClient")) // Attempt to connect
+    {
+      log(F(": MQTT connection failed, rc="), client.state(), F(" try again in 5 seconds"));
+      delay(MQTT_CONNECT_DELAY); // Wait 5 seconds before retrying
+    }
+  }
+}
+
+/// @brief Receives a payload from a specific node.
+/// @details This function updates the network and checks if there is any payload available.
+/// If there is, it reads the header and processes the payload.
+void MainNode::receivePayload()
 {
   network.update(); // Pump the network regularly
-
   while (network.available())
   { // Is there anything ready for us?
 
@@ -96,26 +91,48 @@ void MainNode::receive24RFNetworkMessage()
     network.peek(header);
 
     // the use of switch case is not recommended
-    if (header.type == 'R')
-      handle_R(header);
-    if (header.type == 'B')
-      handle_B(header);
-    if (header.type == 'S')
-      handle_S(header);
-    if (header.type == 'P')
-      handle_P(header);
-    if (header.type != 'R' && header.type != 'B' && header.type != 'S' && header.type != 'P')
+    if (header.type == KEEP_ALIVE)
     {
-      Serial.print(F("*** WARNING *** Unknown message type "));
-      Serial.println(header.type);
+      receiveKeepAlive(header);
+    }
+    if (header.type == READINGS_REQUEST)
+    {
+      receiveReadings(header);
+    }
+    if (header.type == BEGIN_FLAG)
+    {
+      receiveBeginFlag(header);
+    }
+    if (header.type == ACTIVE_NODES)
+    {
+      receiveNodeID(header);
+    }
+    if (header.type != KEEP_ALIVE && header.type != READINGS_REQUEST && header.type != BEGIN_FLAG && header.type != ACTIVE_NODES)
+    {
+      log(F("*** WARNING *** Unknown message type "), header.type);
       network.read(header, 0, 0);
     }
   }
 }
 
-void MainNode::handle_R(RF24NetworkHeader &header)
+/// @brief Receives a keep alive message from a specific node.
+/// @details This function updates the network status and its timestamp.
+/// @param header  The RF24Network header.
+void MainNode::receiveKeepAlive(RF24NetworkHeader &header)
 {
-  network.update();
+  network.read(header, 0, 0);
+
+  network_status[header.from_node - 1].status = true;
+  network_status[header.from_node - 1].time = millis();
+
+  log(F(": Keep alive received from "), header.from_node);
+}
+
+/// @brief Receives readings from a specific node.
+/// @details This function updates the sensor node temperature, phototransistor and name with the information received.
+/// @param header  The RF24Network header.
+void MainNode::receiveReadings(RF24NetworkHeader &header)
+{
   Sensor_Node temp;
   network.read(header, &temp, sizeof(temp));
 
@@ -123,30 +140,28 @@ void MainNode::handle_R(RF24NetworkHeader &header)
   network_status[header.from_node - 1].data.phototransistor = temp.phototransistor;
   strcpy(network_status[header.from_node - 1].data.name, temp.name);
 
-  Serial.print(millis());
-  Serial.print(F(": Readings received from \""));
-  Serial.print(temp.name);
-  Serial.print(F("\" - \"[temp: "));
-  Serial.print(temp.temperature);
-  Serial.print(F("; light: "));
-  Serial.print(temp.phototransistor);
-  Serial.println(F("]\""));
+  log(F(": Readings received from \""), temp.name, F("\" - \"[temp: "), temp.temperature, F("; light: "), temp.phototransistor, F("]"));
 }
 
-void MainNode::handle_B(RF24NetworkHeader &header)
+/// @brief Receives a begin flag from a specific node.
+/// @details This function resets the connected nodes list of the node that sent the begin flag.
+/// @param header  The RF24Network header.
+void MainNode::receiveBeginFlag(RF24NetworkHeader &header)
 {
   network.read(header, 0, 0);
+
   for (int i = 0; i < MAX_STUDENT_NODES; i++)
   {
     network_status[header.from_node - 1].connected_nodes[i].nodeID = 0;
   }
 
-  Serial.print(millis());
-  Serial.print(F(": Begin flag received from "));
-  Serial.println(header.from_node);
+  log(F(": Begin flag received from "), header.from_node);
 }
 
-void MainNode::handle_S(RF24NetworkHeader &header)
+/// @brief Receives a node ID from a specific node.
+/// @details This function updates the connected nodes list of the node that sent the node ID.
+/// @param header  The RF24Network header.
+void MainNode::receiveNodeID(RF24NetworkHeader &header)
 {
   Student_Node message;
   network.read(header, &message, sizeof(message));
@@ -161,44 +176,28 @@ void MainNode::handle_S(RF24NetworkHeader &header)
     }
   }
 
-  Serial.print(millis());
-  Serial.print(F(": Node received from "));
-  Serial.print(header.from_node);
-  Serial.print(F(" ("));
-  Serial.print(message.name);
-  Serial.println(F(")"));
+  log(F(": Node ID received from "), header.from_node, F(" (\""), message.name, F("\")"));
 }
 
-void MainNode::handle_P(RF24NetworkHeader &header)
-{
-  network.read(header, 0, 0);
-
-  network_status[header.from_node - 1].status = true;
-  network_status[header.from_node - 1].time = millis();
-
-  Serial.print(millis());
-  Serial.print(F(": Keep alive received from "));
-  Serial.println(header.from_node);
-}
-
-void MainNode::checkNodesConnection(const unsigned long interval)
+/// @brief Checks the connection of the sensor nodes.
+/// @details This function inactivates the sensor nodes that are not active.
+void MainNode::checkNodesConnection()
 {
   for (int i = 0; i < MAX_SENSOR_NODES; i++)
   {
-    if (network_status[i].status && millis() - network_status[i].time > interval)
+    if (network_status[i].status && millis() - network_status[i].time > NODE_CONNECTION_CHECK_INTERVAL)
     {
       network_status[i].status = false;
-
-      Serial.print(millis());
-      Serial.print(F(": Node "));
-      Serial.print(i + 1);
-      Serial.println(F(" removed from active nodes list"));
+      log(F(": Node "), i + 1, F(" removed from active nodes list"));
     }
   }
 }
 
-void MainNode::publishNetworkStatus(const unsigned long interval)
+/// @brief Publishes the network status to the MQTT server.
+/// @details This function sends the temperature, phototransistor, name, and connected nodes of each sensor node.
+void MainNode::publishNetworkStatus()
 {
+  // Test data
   network_status[0].status = true;
   network_status[0].data.temperature = 25;
   network_status[0].data.phototransistor = 100;
@@ -210,7 +209,7 @@ void MainNode::publishNetworkStatus(const unsigned long interval)
   network_status[0].connected_nodes[1].name[0] = 'BERN02';
 
   unsigned long now = millis();
-  if (now - last_sent > interval)
+  if (now - last_sent > NETWORK_STATUS_SEND_INTERVAL)
   {
     last_sent = now;
 
@@ -242,12 +241,21 @@ void MainNode::publishNetworkStatus(const unsigned long interval)
         String jsonString;
         serializeJson(root, jsonString);
 
-        Serial.print(millis());
-        Serial.print(F(": "));
-        Serial.println(jsonString);
-
+        log(F(": Sent network status: "), jsonString);
         client.publish(_topic, jsonString.c_str());
       }
     }
   }
+}
+
+/// @brief Logs a message to the serial monitor.
+/// @tparam ...Args This is a variadic template that accepts any number of arguments.
+/// @param ...args This is a parameter pack that accepts any number of arguments.
+template <typename... Args>
+void MainNode::log(Args... args)
+{
+  Serial.print(millis());
+  Serial.print(F(": "));
+  (Serial.print(args), ...);
+  Serial.println();
 }

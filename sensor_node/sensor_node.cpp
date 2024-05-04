@@ -10,8 +10,8 @@ SensorNode::SensorNode(uint16_t node, char *name, int channel, uint16_t masterNo
   strcpy(sensorData.name, name);
 }
 
-/// @brief Initializes the student node.
-/// @details This function initializes the student node by setting up the RF24Network.
+/// @brief Initializes the sensor node.
+/// @details This function initializes the sensor node by setting up the RF24Network.
 /// It also populates the active nodes array with the node IDs.
 void SensorNode::init()
 {
