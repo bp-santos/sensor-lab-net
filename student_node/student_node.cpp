@@ -75,7 +75,7 @@ void StudentNode::sendPayload(uint16_t to, char type, const void *payload)
 /// If there is, it reads the header and processes the payload.
 void StudentNode::receivePayload()
 {
-  network.update();
+  network.update(); // Pump the network regularly
   while (network.available())
   {                           // Is there anything ready for us?
     RF24NetworkHeader header; // If so, take a look at it
@@ -209,7 +209,8 @@ void StudentNode::sendMessage(char *name, char type, const void *message)
 /// @brief Reads a message from the radio network.
 /// @param header The header of the message.
 /// @param message The message to read.
-void StudentNode::readMessage(RF24NetworkHeader header, void *message) {
+void StudentNode::readMessage(RF24NetworkHeader header, void *message)
+{
   network.read(header, &message, sizeof(message));
 }
 

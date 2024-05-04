@@ -7,8 +7,6 @@
 #include <RF24Network.h>
 
 const uint16_t NODE_BASE = 010;
-const uint16_t SENSOR_NODE_MIN = 1;
-const uint16_t SENSOR_NODE_MAX = 5;
 const int RF24_PA_LEVEL = RF24_PA_HIGH;
 const int RADIO_CE_PIN = 7;
 const int RADIO_CSN_PIN = 8;
@@ -23,7 +21,6 @@ const char SELF_ID_REQUEST = 'N';
 const char ID_REQUEST = 'I';
 const char ALERT_REQUEST = 'A';
 const char READINGS_REQUEST = 'R';
-
 const char KEEP_ALIVE = 'P';
 const char ALERT_DEACTIVATION = 'D';
 
@@ -46,7 +43,7 @@ public:
   StudentNode(uint16_t sensorNode, char *name, int channel);
   void init();
   void performEssentialOperations();
-   
+
   void sendReadingsRequestToSensorNode();
   void sendAlertRequestToSensorNode(char type, int value);
   void sendAlertDeactivationToSensorNode();
@@ -56,7 +53,7 @@ public:
   void readMessage(RF24NetworkHeader header, void *message);
 
 private:
-  RF24 radio;           //  nRF24L01(+) radio attached using Getting Started board
+  RF24 radio; //  nRF24L01(+) radio attached using Getting Started board
   RF24Network network;
 
   unsigned long last_sent_reading;            // When did we send the last readings request?
@@ -75,12 +72,12 @@ private:
   void setupRF24Network();
   void sendPayload(uint16_t to, char type, const void *payload);
   void receivePayload();
-  
+
   void sendIDRequest(char type, const char *name);
   void sendKeepAlive(const unsigned long interval);
   void restart();
 
-  template<typename... Args>
+  template <typename... Args>
   void log(Args... args);
 };
 

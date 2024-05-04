@@ -3,9 +3,13 @@
 #include <RF24.h>
 #include <RF24Network.h>
 
+uint16_t node = 01;
 char name[NAME_LENGTH] = "NODE01";
+int channel = 90;
+uint16_t masterNode = 00;
 
-SensorNode sensorNode(01, name, 90); // (node, channel)
+SensorNode sensorNode(node, name, channel, masterNode);
+
 int tempPin = 1;
 int lightPin = 2;
 
@@ -21,11 +25,11 @@ void setup()
 
 void loop()
 {
-  sensorNode.sendKeepAlive(3000, 00);
-  sensorNode.receive24RFNetworkMessage();
-  // sensorNode.updateSensorValues(tempPin, lightPin, 5000);
-  sensorNode.fakeSensorValues(5000);
-  sensorNode.checkNodesConnection(10000);
-  sensorNode.sendNetworkStatus(5000, 00);
+  sensorNode.sendKeepAlive();
+  sensorNode.receivePayload();
+  // sensorNode.updateSensorValues(tempPin, lightPin);
+  sensorNode.generateRandomSensorValues();
+  sensorNode.checkNodesConnection();
+  sensorNode.sendNetworkStatus();
   sensorNode.checkAlerts();
 }

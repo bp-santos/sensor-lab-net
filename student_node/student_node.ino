@@ -25,11 +25,11 @@ void loop()
   studentNode.sendMessage("BERN02", 'M', "Hello World");
 
   RF24NetworkHeader header = studentNode.receiveMessageHeader();
-  if(header.type == 'M')
+  if (header.type == 'M')
   {
     char message[32];
     studentNode.readMessage(header, message);
-    
+
     Serial.print(F(": Received message from "));
     Serial.print(header.from_node);
     Serial.print(F(": "));

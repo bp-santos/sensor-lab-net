@@ -6,9 +6,27 @@
 #include <RF24.h>
 #include <RF24Network.h>
 
+const int RADIO_CE_PIN = 7;
+const int RADIO_CSN_PIN = 8;
+const int RF24_PA_LEVEL = RF24_PA_HIGH;
 const int MAX_STUDENT_NODES = 124;
 const int MAX_ALERT_PER_STUDENT = 1;
 const int NAME_LENGTH = 7;
+const unsigned long KEEP_ALIVE_INTERVAL = 3000;
+const long unsigned INIT_DELAY = 2000;
+const long unsigned SENSOR_DATA_UPDATE_INTERVAL = 5000;
+const long unsigned NETWORK_STATUS_SEND_INTERVAL = 10000;
+const long unsigned NODE_CONNECTION_CHECK_INTERVAL = 10000;
+const long unsigned PAYLOAD_SEND_DELAY = 100;
+
+const char SELF_ID_REQUEST = 'N';
+const char ID_REQUEST = 'I';
+const char ALERT_REQUEST = 'A';
+const char READINGS_REQUEST = 'R';
+const char KEEP_ALIVE = 'P';
+const char ALERT_DEACTIVATION = 'D';
+const char BEGIN_FLAG = 'B';
+const char ACTIVE_NODES = 'S';
 
 struct Sensor_Node
 {
@@ -37,37 +55,55 @@ struct Active_Nodes
   long time;
 };
 
-extern Sensor_Node sensorData;
-extern Active_Nodes active_nodes[MAX_STUDENT_NODES];
-
 class SensorNode
 {
 public:
-  SensorNode(uint16_t node, char *name, int channel);
+  SensorNode(uint16_t node, char *name, int channel, uint16_t masterNode);
   void init();
-  void populateActiveNodesArray();
-  void setupRF24Network();
-  void updateSensorValues(int tempPin, int lightPin, const unsigned long interval);
-  void fakeSensorValues(const unsigned long interval);
-  void sendNetworkStatus(const unsigned long interval, uint16_t node);
+  void sendKeepAlive();
+  void receivePayload();
+  void updateSensorValues(int tempPin, int lightPin);
+  void generateRandomSensorValues();
+  void checkNodesConnection();
+  void sendNetworkStatus();
   void checkAlerts();
-  void checkNodesConnection(const unsigned long interval);
-  void sendKeepAlive(const unsigned long interval, uint16_t to);
-  void receive24RFNetworkMessage();
 
 private:
+  RF24 radio;
+  RF24Network network;
+
+  unsigned long last_reading;
+  unsigned long last_status_sent;
+  unsigned long last_sent_keep_alive;
+
+  Sensor_Node sensorData;
+  Active_Nodes active_nodes[MAX_STUDENT_NODES];
+
   uint16_t _node;
+  uint16_t _masterNode;
   int _channel;
 
-  void handle_A(RF24NetworkHeader &header);
-  void handle_D(RF24NetworkHeader &header);
-  void handle_R(RF24NetworkHeader &header);
-  void send_R(uint16_t to);
-  uint16_t handle_N(RF24NetworkHeader &header);
-  void send_N(uint16_t to, uint16_t id);
-  void handle_P(RF24NetworkHeader &header);
-  void send_B(uint16_t to);
-  void send_S(uint16_t to);
+  void populateActiveNodesArray();
+  int octalToDecimal(uint16_t octalNumber);
+  void setupRF24Network();
+
+  bool sendPayload(uint16_t to, char type, const void *payload);
+
+  uint16_t receiveNodeIDRequest(RF24NetworkHeader &header);
+  void sendNextAvailableNodeID(uint16_t to, uint16_t id);
+  uint16_t receiveNodeIDRequestFromName(RF24NetworkHeader &header);
+  void sendNodeID(uint16_t to, uint16_t id);
+  void receiveAlertRequest(RF24NetworkHeader &header);
+  void receiveAlertDeactivationRequest(RF24NetworkHeader &header);
+  void receiveReadingsRequest(RF24NetworkHeader &header);
+  void sendReadings(uint16_t to);
+  void receiveKeepAlive(RF24NetworkHeader &header);
+
+  void sendBeginFlagArray();
+  void sendArrayOfActiveNodes();
+
+  template <typename... Args>
+  void log(Args... args);
 };
 
 #endif
