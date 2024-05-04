@@ -118,7 +118,9 @@ void SensorNode::receive24RFNetworkMessage()
       send_N(header.from_node, id);
     }
     if (header.type == 'P')
+    {
       handle_P(header);
+    }
     if (header.type != 'A' && header.type != 'D' && header.type != 'R' && header.type != 'N' && header.type != 'P')
     {
       Serial.print(F("*** WARNING *** Unknown message type "));

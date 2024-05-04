@@ -3,9 +3,11 @@
 #include <RF24.h>
 #include <RF24Network.h>
 
+uint16_t sensorNode = 01;
 char name[NAME_LENGTH] = "BERN01";
+int channel = 90;
 
-StudentNode studentNode(01, name, 90); // (sensorNode, name, channel)
+StudentNode studentNode(sensorNode, name, channel);
 
 void setup()
 {
@@ -15,13 +17,22 @@ void setup()
     // some boards need this because of native USB capability
   }
   studentNode.init();
-  // studentNode.sendAlertRequest('T', -100.0);
 }
 
 void loop()
 {
-  studentNode.sendKeepAlive(3000);
-  studentNode.receive24RFNetworkResponse();
-  studentNode.sendReadingsRequest(5000);
-  studentNode.restart();
+  studentNode.performEssentialOperations();
+  studentNode.sendMessage("BERN02", 'M', "Hello World");
+
+  RF24NetworkHeader header = studentNode.receiveMessageHeader();
+  if(header.type == 'M')
+  {
+    char message[32];
+    studentNode.readMessage(header, message);
+    
+    Serial.print(F(": Received message from "));
+    Serial.print(header.from_node);
+    Serial.print(F(": "));
+    Serial.println(message);
+  }
 }

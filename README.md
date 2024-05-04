@@ -161,3 +161,7 @@ Master's Thesis in Wireless Sensor Networks (WSN) using Arduino boards, nRF24L01
 03/05/2024
 - Finished Lab 1 code from ACIC lectures
 - Simplified lab-setup.txt
+
+04/05/2024
+- Started setting up the Lab 2 guide
+- Simplified the student node code
