@@ -70,10 +70,10 @@ private:
   int _channel;
 
   void setupRF24Network();
-  void sendPayload(uint16_t to, char type, const void *payload);
+  template <typename T>
+  bool sendPayload(uint16_t to, char type, const T &payload);
   void receivePayload();
 
-  void sendIDRequest(char type, const char *name);
   void sendKeepAlive(const unsigned long interval);
   void restart();
 

@@ -8,7 +8,7 @@ char name[NAME_LENGTH] = "NODE01";
 int channel = 90;
 uint16_t masterNode = 00;
 
-SensorNode sensorNode(node, name, channel, masterNode);
+SensorNode sensorNode(node, name, channel, masterNode); 
 
 int tempPin = 1;
 int lightPin = 2;

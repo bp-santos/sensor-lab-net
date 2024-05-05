@@ -4,8 +4,8 @@
 /// @param node The sensor node ID.
 /// @param name The name of the sensor node.
 /// @param channel The radio channel.
-SensorNode::SensorNode(uint16_t node, char *name, int channel, uint16_t masterNode)
-    : radio(RADIO_CE_PIN, RADIO_CSN_PIN), network(radio), _node(node), _channel(channel), _masterNode(masterNode)
+SensorNode::SensorNode(uint16_t node, char *name, int channel, uint16_t mainNode)
+    : radio(RADIO_CE_PIN, RADIO_CSN_PIN), network(radio), _node(node), _channel(channel), _mainNode(mainNode)
 {
   strcpy(sensorData.name, name);
 }
@@ -30,25 +30,24 @@ void SensorNode::populateActiveNodesArray()
                                   1240, 2240, 3240, 4240, 5240, 1340, 2340, 3340, 4340, 5340, 1440, 2440, 3440, 4440, 5440, 1540, 2540, 3540, 4540, 5540, 1150, 2150, 3150, 4150, 5150,
                                   1250, 2250, 3250, 4250, 5250, 1350, 2350, 3350, 4350, 5350, 1450, 2450, 3450, 4450, 5450, 1550, 2550, 3550, 4550, 5550};
 
-  // TODO: test this part of the code
   for (int i = 0; i < MAX_STUDENT_NODES; i++)
   {
-    active_nodes[i].node.nodeID = octalToDecimal(table[i] + octalToDecimal(_node));
+    active_nodes[i].node.nodeID = octalToDecimal(table[i] + _node);
   }
 }
 
+/// @brief  Converts an octal number to a decimal number.
+/// @param octalNumber The octal number to convert.
+/// @return The decimal number.
 int SensorNode::octalToDecimal(uint16_t octalNumber)
 {
   int decimalValue = 0;
-  int base = 1; // Base for octal
-
-  // Extract digits from right to left and convert to decimal
-  while (octalNumber != 0)
+  int base = 1;
+  while (octalNumber)
   {
-    int lastDigit = octalNumber % 10; // Get the rightmost digit
-    decimalValue += lastDigit * base; // Convert to decimal value
-    octalNumber /= 10;                // Move to the next digit
-    base *= 8;                        // Increase base
+    decimalValue += (octalNumber % 10) * base;
+    octalNumber /= 10;
+    base *= 8;
   }
   return decimalValue;
 }
@@ -71,17 +70,20 @@ void SensorNode::setupRF24Network()
   network.begin(_node);
 }
 
-/// @brief Sends a payload to a specific node.
+/// @brief  Sends a payload to a specific node.
+/// @tparam T The type of the payload.
 /// @param to The node ID to send the payload to.
 /// @param type The type of the payload.
 /// @param payload The payload to send.
-bool SensorNode::sendPayload(uint16_t to, char type, const void *payload)
+/// @return True if the message is sent successfully, false otherwise.
+template <typename T>
+bool SensorNode::sendPayload(uint16_t to, char type, const T &payload)
 {
   network.update(); // keep the network updated
   RF24NetworkHeader header(to, type);
   delay(PAYLOAD_SEND_DELAY); // ensure reliable connectivity
   bool ok = network.write(header, &payload, sizeof(payload));
-  log(ok ? F(" (status = 1)") : F(" (status = 0)"));
+  Serial.print(ok ? F(" (status = 1)") : F(" (status = 0)"));
   return ok;
 }
 
@@ -160,7 +162,7 @@ uint16_t SensorNode::receiveNodeIDRequest(RF24NetworkHeader &header)
     }
   }
 
-  log(F(": Node ID request received from "), header.from_node, F(" with the name \""), message, F("\""));
+  log(F(": Node ID request received from "), header.from_node, F(" with the name "), message);
   return id;
 }
 
@@ -171,7 +173,7 @@ uint16_t SensorNode::receiveNodeIDRequest(RF24NetworkHeader &header)
 void SensorNode::sendNextAvailableNodeID(uint16_t to, uint16_t id)
 {
   log(F(": Next available node ID sent to "), to, F(" (id = "), id, F(")"));
-  bool ok = sendPayload(to, SELF_ID_REQUEST, &id);
+  bool ok = sendPayload(to, SELF_ID_REQUEST, id);
 
   if (!ok)
   {
@@ -198,7 +200,7 @@ uint16_t SensorNode::receiveNodeIDRequestFromName(RF24NetworkHeader &header)
   {
     if (active_nodes[i].status && active_nodes[i].node.name == name)
     {
-      log(F(": Node ID request received from "), header.from_node, F(" with the name \""), name, F("\""));
+      log(F(": Node ID request received from "), header.from_node, F(" with the name "), name);
       return active_nodes[i].node.nodeID;
     }
   }
@@ -210,7 +212,7 @@ uint16_t SensorNode::receiveNodeIDRequestFromName(RF24NetworkHeader &header)
 void SensorNode::sendNodeID(uint16_t to, uint16_t id)
 {
   log(F(": Node ID sent to "), to, F(" (id = "), id, F(")"));
-  sendPayload(to, ID_REQUEST, &id);
+  sendPayload(to, ID_REQUEST, id);
 }
 
 /// @brief  Receives an alert request from a specific node.
@@ -231,7 +233,7 @@ void SensorNode::receiveAlertRequest(RF24NetworkHeader &header)
     }
   }
 
-  log(F(": Alert request received from "), header.from_node, F(" - \"[type: "), temp.type, F("; value: "), temp.value, F("]"));
+  log(F(": Alert request received from "), header.from_node, F(" - [type: "), temp.type, F("; value: "), temp.value, F("]"));
 }
 
 /// @brief  Receives an alert deactivation request from a specific node.
@@ -268,8 +270,8 @@ void SensorNode::receiveReadingsRequest(RF24NetworkHeader &header)
 /// @param to The ID of the node to send the readings to.
 void SensorNode::sendReadings(uint16_t to)
 {
-  log(F(": Readings sent to"), to);
-  sendPayload(to, READINGS_REQUEST, &sensorData);
+  log(F(": Readings sent to "), to, F(" - [temp: "), sensorData.temperature, F("; light: "), sensorData.phototransistor, F("]"));
+  sendPayload(to, READINGS_REQUEST, sensorData);
 }
 
 /// @brief  Receives a keep alive message from a specific node.
@@ -299,8 +301,8 @@ void SensorNode::sendKeepAlive()
   if (now - last_sent_keep_alive >= KEEP_ALIVE_INTERVAL)
   { // If it's time to send a message, send it!
     last_sent_keep_alive = now;
-    log(F(": Keep alive sent to"), _masterNode);
-    sendPayload(_masterNode, KEEP_ALIVE, 0);
+    log(F(": Keep alive sent to "), _mainNode);
+    sendPayload(_mainNode, KEEP_ALIVE, 0);
   }
 }
 
@@ -351,7 +353,7 @@ void SensorNode::sendNetworkStatus()
   unsigned long now = millis();
   if (now - last_status_sent > NETWORK_STATUS_SEND_INTERVAL)
   {
-    sendReadings(_masterNode);
+    sendReadings(_mainNode);
     sendBeginFlagArray();
     sendArrayOfActiveNodes();
     last_status_sent = now;
@@ -362,8 +364,8 @@ void SensorNode::sendNetworkStatus()
 /// @details The flag indicates the beginning of the data transmission.
 void SensorNode::sendBeginFlagArray()
 {
-  log(F(": Begin flag sent to "), _masterNode);
-  sendPayload(_masterNode, 'B', 0);
+  log(F(": Begin flag sent to "), _mainNode);
+  sendPayload(_mainNode, 'B', 0);
 }
 
 /// @brief  Sends an array of active nodes to the master node.
@@ -373,8 +375,8 @@ void SensorNode::sendArrayOfActiveNodes()
   {
     if (active_nodes[i].status)
     {
-      log(F(": "), millis(), F(": Active node ("), active_nodes[i].node.name, F(") sent to "), _masterNode);
-      sendPayload(_masterNode, 'S', &active_nodes[i].node);
+      log(F(": "), millis(), F(": Active node ("), active_nodes[i].node.name, F(") sent to "), _mainNode);
+      sendPayload(_mainNode, 'S', active_nodes[i].node);
     }
   }
 }
@@ -402,8 +404,8 @@ void SensorNode::checkAlerts()
           temp.value = sensorData.phototransistor;
           temp.type = 'L';
         }
-        log(F(": Alert sent to "), active_nodes[i].node.nodeID, F(" - \"[type: "), temp.type, F("; value: "), temp.value, F("]"));
-        sendPayload(active_nodes[i].node.nodeID, ALERT_REQUEST, &temp);
+        log(F(": Alert sent to "), active_nodes[i].node.nodeID, F(" - [type: "), temp.type, F("; value: "), temp.value, F("]"));
+        sendPayload(active_nodes[i].node.nodeID, ALERT_REQUEST, temp);
       }
     }
   }
@@ -415,8 +417,7 @@ void SensorNode::checkAlerts()
 template <typename... Args>
 void SensorNode::log(Args... args)
 {
-  Serial.print(millis());
-  Serial.print(F(": "));
-  (Serial.print(args), ...);
   Serial.println();
+  Serial.print(millis());
+  (Serial.print(args), ...);
 }

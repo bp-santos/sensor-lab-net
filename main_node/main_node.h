@@ -80,6 +80,7 @@ private:
   void receiveReadings(RF24NetworkHeader &header);
   void receiveBeginFlag(RF24NetworkHeader &header);
   void receiveNodeID(RF24NetworkHeader &header);
+  int decimalToOctal(uint16_t octalNumber);
 
   template <typename... Args>
   void log(Args... args);

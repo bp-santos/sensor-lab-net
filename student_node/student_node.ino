@@ -22,7 +22,8 @@ void setup()
 void loop()
 {
   studentNode.performEssentialOperations();
-  studentNode.sendMessage("BERN02", 'M', "Hello World");
+  studentNode.sendReadingsRequestToSensorNode();
+  /*studentNode.sendMessage("BERN02", 'M', "Hello World");
 
   RF24NetworkHeader header = studentNode.receiveMessageHeader();
   if (header.type == 'M')
@@ -34,5 +35,5 @@ void loop()
     Serial.print(header.from_node);
     Serial.print(F(": "));
     Serial.println(message);
-  }
+  }*/
 }

@@ -167,3 +167,7 @@ Master's Thesis in Wireless Sensor Networks (WSN) using Arduino boards, nRF24L01
 - Simplified the student node code
 - Simplified the sensor node code
 - Simplified the main node code
+
+05/05/2024
+- Fixed errors resulting from the simplifications made the previous day
+- Everything is now working as before but with the simplifications

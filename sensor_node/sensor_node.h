@@ -80,14 +80,15 @@ private:
   Active_Nodes active_nodes[MAX_STUDENT_NODES];
 
   uint16_t _node;
-  uint16_t _masterNode;
+  uint16_t _mainNode;
   int _channel;
 
   void populateActiveNodesArray();
   int octalToDecimal(uint16_t octalNumber);
   void setupRF24Network();
 
-  bool sendPayload(uint16_t to, char type, const void *payload);
+  template <typename T>
+  bool sendPayload(uint16_t to, char type, const T &payload);
 
   uint16_t receiveNodeIDRequest(RF24NetworkHeader &header);
   void sendNextAvailableNodeID(uint16_t to, uint16_t id);

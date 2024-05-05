@@ -23,7 +23,8 @@ void StudentNode::init()
   uint16_t temp = _node;
   while (_node == temp) // wait until the node ID changes
   {
-    sendIDRequest(SELF_ID_REQUEST, _name);
+    log(F(": New ID request sent to "), _sensorNode);
+    sendPayload(_sensorNode, SELF_ID_REQUEST, _name);
     receivePayload();
     delay(ID_REQUEST_DELAY); // retry after 5s
   }
@@ -56,18 +57,21 @@ void StudentNode::setupRF24Network()
   network.begin(_node);
 }
 
-/// @brief Sends a payload to a specific node.
+/// @brief  Sends a payload to a specific node.
+/// @tparam T The type of the payload.
 /// @param to The node ID to send the payload to.
 /// @param type The type of the payload.
 /// @param payload The payload to send.
-void StudentNode::sendPayload(uint16_t to, char type, const void *payload)
+/// @return True if the message is sent successfully, false otherwise.
+template <typename T>
+bool StudentNode::sendPayload(uint16_t to, char type, const T &payload)
 {
   network.update(); // keep the network updated
   RF24NetworkHeader header(to, type);
   delay(PAYLOAD_SEND_DELAY); // ensure reliable connectivity
   bool ok = network.write(header, &payload, sizeof(payload));
-  log(ok ? F(" (status = 1)") : F(" (status = 0)"));
-  countFailedMessages = ok ? 0 : countFailedMessages + 1;
+  Serial.print(ok ? F(" (status = 1)") : F(" (status = 0)"));
+  return ok;
 }
 
 /// @brief Receives a payload from the sensor node.
@@ -96,13 +100,13 @@ void StudentNode::receivePayload()
     {
       Alert_Request temp;
       network.read(header, &temp, sizeof(temp));
-      log(F(": Sensor alert received from "), header.from_node, F(" - \"[type: "), temp.type, F("; value: "), temp.value, F("]\""));
+      log(F(": Sensor alert received from "), header.from_node, F(" - [type: "), temp.type, F("; value: "), temp.value, F("]"));
     }
     if (header.type == READINGS_REQUEST)
     {
       Sensor_Node temp;
       network.read(header, &temp, sizeof(temp));
-      log(F(": Sensor readings received from "), header.from_node, F(" - \"[temp: "), temp.temperature, F("; light: "), temp.phototransistor, F("]\""));
+      log(F(": Sensor readings received from "), header.from_node, F(" - [temp: "), temp.temperature, F("; light: "), temp.phototransistor, F("]"));
     }
   }
 }
@@ -122,19 +126,10 @@ RF24NetworkHeader StudentNode::receiveMessageHeader()
     }
     else
     {
-      log(F(": Message types 'A', 'I', 'N', and 'R' are reserved."));
-      return;
+      log(F(": Message types 'A', 'I', 'N', and 'R' are reserved"));
+      break;
     }
   }
-}
-
-/// @brief Sends an ID request to the sensor node.
-/// @param type The type of the ID request.
-/// @param name The name to send with the ID request.
-void StudentNode::sendIDRequest(char type, const char *name)
-{
-  log(F(": ID request sent to"), _sensorNode);
-  sendPayload(_sensorNode, type, name);
 }
 
 /// @brief Sends a keep alive message to the sensor node at regular intervals.
@@ -145,7 +140,7 @@ void StudentNode::sendKeepAlive(const unsigned long interval)
   if (now - last_sent_keep_alive >= interval)
   { // If it's time to send a message, send it!
     last_sent_keep_alive = now;
-    log(F(": Keep alive sent to"), _sensorNode);
+    log(F(": Keep alive sent to "), _sensorNode);
     sendPayload(_sensorNode, KEEP_ALIVE, 0);
   }
 }
@@ -164,8 +159,9 @@ void StudentNode::restart()
 /// @brief Sends a readings request to the sensor node.
 void StudentNode::sendReadingsRequestToSensorNode()
 {
-  log(F(": Readings request sent to"), _sensorNode);
+  log(F(": Readings request sent to "), _sensorNode);
   sendPayload(_sensorNode, READINGS_REQUEST, 0);
+  delay(5000); //TODO: colocar um argumento para o delay
 }
 
 /// @brief Sends an alert request to the sensor node.
@@ -177,14 +173,14 @@ void StudentNode::sendAlertRequestToSensorNode(char type, int value)
   message.type = type;
   message.value = value;
 
-  log(F(": Alert activation sent to"), _sensorNode, F(" - \"[type: "), type, F("; value: "), value, F("]\""));
-  sendPayload(_sensorNode, ALERT_REQUEST, &message);
+  log(F(": Alert activation sent to "), _sensorNode, F(" - [type: "), type, F("; value: "), value, F("]"));
+  sendPayload(_sensorNode, ALERT_REQUEST, message);
 }
 
 /// @brief Sends an alert deactivation to the sensor node.
 void StudentNode::sendAlertDeactivationToSensorNode()
 {
-  log(F(": Alert deactivation sent to"), _sensorNode);
+  log(F(": Alert deactivation sent to "), _sensorNode);
   sendPayload(_sensorNode, ALERT_DEACTIVATION, 0);
 }
 
@@ -195,14 +191,17 @@ void StudentNode::sendAlertDeactivationToSensorNode()
 /// @param message The message to send.
 void StudentNode::sendMessage(char *name, char type, const void *message)
 {
-  sendIDRequest(ID_REQUEST, name);
+  log(F(": ID request sent to "), _sensorNode);
+  sendPayload(_sensorNode, ID_REQUEST, name);
+
   receivePayload();
   if (nodeID == _sensorNode)
   {
-    log(F("You cannot send this message to the sensor node. Use the appropriate function instead."));
+    log(F("You cannot send this message to the sensor node. Use the appropriate function instead"));
     return;
   }
-  log(F(": Message sent to"), nodeID, F("( "), name, F(") - \""), (char *)message, F("\""));
+  
+  log(F(": Message sent to "), nodeID, F("( "), name, F(") - "), (char *)message);
   sendPayload(nodeID, type, message);
 }
 
@@ -220,8 +219,7 @@ void StudentNode::readMessage(RF24NetworkHeader header, void *message)
 template <typename... Args>
 void StudentNode::log(Args... args)
 {
-  Serial.print(millis());
-  Serial.print(F(": "));
-  (Serial.print(args), ...);
   Serial.println();
+  Serial.print(millis());
+  (Serial.print(args), ...);
 }

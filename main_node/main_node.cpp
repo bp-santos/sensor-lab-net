@@ -140,7 +140,7 @@ void MainNode::receiveReadings(RF24NetworkHeader &header)
   network_status[header.from_node - 1].data.phototransistor = temp.phototransistor;
   strcpy(network_status[header.from_node - 1].data.name, temp.name);
 
-  log(F(": Readings received from \""), temp.name, F("\" - \"[temp: "), temp.temperature, F("; light: "), temp.phototransistor, F("]"));
+  log(F(": Readings received from "), temp.name, F(" - [temp: "), temp.temperature, F("; light: "), temp.phototransistor, F("]"));
 }
 
 /// @brief Receives a begin flag from a specific node.
@@ -176,7 +176,7 @@ void MainNode::receiveNodeID(RF24NetworkHeader &header)
     }
   }
 
-  log(F(": Node ID received from "), header.from_node, F(" (\""), message.name, F("\")"));
+  log(F(": Node ID received from "), header.from_node, F(" ("), message.name, F(")"));
 }
 
 /// @brief Checks the connection of the sensor nodes.
@@ -197,17 +197,6 @@ void MainNode::checkNodesConnection()
 /// @details This function sends the temperature, phototransistor, name, and connected nodes of each sensor node.
 void MainNode::publishNetworkStatus()
 {
-  // Test data
-  network_status[0].status = true;
-  network_status[0].data.temperature = 25;
-  network_status[0].data.phototransistor = 100;
-  memcpy(network_status[0].data.name, "NODE01", NAME_LENGTH);
-  network_status[0].time = millis();
-  network_status[0].connected_nodes[0].nodeID = 21;
-  network_status[0].connected_nodes[0].name[0] = 'BERN01';
-  network_status[0].connected_nodes[1].nodeID = 31;
-  network_status[0].connected_nodes[1].name[0] = 'BERN02';
-
   unsigned long now = millis();
   if (now - last_sent > NETWORK_STATUS_SEND_INTERVAL)
   {
@@ -233,7 +222,7 @@ void MainNode::publishNetworkStatus()
           if (network_status[i].connected_nodes[j].nodeID != 0)
           {
             JsonObject node = nodes.createNestedObject();
-            node["id"] = "0" + String(network_status[i].connected_nodes[j].nodeID, DEC);
+            node["id"] = "0" + String(decimalToOctal(network_status[i].connected_nodes[j].nodeID));
             node["name"] = network_status[i].connected_nodes[j].name;
           }
         }
@@ -248,14 +237,29 @@ void MainNode::publishNetworkStatus()
   }
 }
 
+/// @brief  Converts a decimal number to an octal number.
+/// @param decimalNumber The decimal number to convert.
+/// @return The octal number.
+int MainNode::decimalToOctal(uint16_t decimalNumber)
+{
+  int octalNumber = 0;
+  int base = 1;
+  while (decimalNumber != 0)
+  {
+    octalNumber += (decimalNumber % 8) * base;
+    decimalNumber /= 8;
+    base *= 10;
+  }
+  return octalNumber;
+}
+
 /// @brief Logs a message to the serial monitor.
 /// @tparam ...Args This is a variadic template that accepts any number of arguments.
 /// @param ...args This is a parameter pack that accepts any number of arguments.
 template <typename... Args>
 void MainNode::log(Args... args)
 {
-  Serial.print(millis());
-  Serial.print(F(": "));
-  (Serial.print(args), ...);
   Serial.println();
+  Serial.print(millis());
+  (Serial.print(args), ...);
 }

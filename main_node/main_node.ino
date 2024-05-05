@@ -6,9 +6,11 @@
 
 uint16_t node = 00;
 int channel = 90;
+// char *ssid = "NOS-E914";
+// char *wifiPassword = "FUACPFMP";
 char *ssid = "NOS-0856";
 char *wifiPassword = "FG94RWP5";
-char *server = "192.168.1.28";
+char *server = "192.168.1.25";
 short port = 1883;
 char *topic = "Main Node";
 
