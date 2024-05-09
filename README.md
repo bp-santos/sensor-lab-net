@@ -18,7 +18,6 @@ Master's Thesis in Wireless Sensor Networks (WSN) using Arduino boards, nRF24L01
 - mudar a cor dos nós no dashboard
 - descrição de cada nó para saber a localização geográfica
 - GXX-IXX - nome a atribuir
-- Simplificar as bibliotecas e usar espécie de heranças
 
 ## Logs
 

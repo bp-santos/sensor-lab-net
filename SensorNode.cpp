@@ -1,11 +1,11 @@
-#include "sensor_node.h"
+#include "SensorNode.h"
 
 /// @brief Constructor for the SensorNode class.
 /// @param node The sensor node ID.
 /// @param name The name of the sensor node.
 /// @param channel The radio channel.
 SensorNode::SensorNode(uint16_t node, char *name, int channel, uint16_t mainNode)
-    : radio(RADIO_CE_PIN, RADIO_CSN_PIN), network(radio), _node(node), _channel(channel), _mainNode(mainNode)
+    : PreInstalledNode(channel, node), _mainNode(mainNode)
 {
   strcpy(sensorData.name, name);
 }
@@ -52,45 +52,10 @@ int SensorNode::octalToDecimal(uint16_t octalNumber)
   return decimalValue;
 }
 
-/// @brief Sets up the RF24Network for the sensor node.
-/// @details This function initializes the SPI and the radio hardware.
-void SensorNode::setupRF24Network()
-{
-  SPI.begin();
-  if (!radio.begin())
-  {
-    Serial.println(F("Radio hardware not responding!"));
-    while (1)
-    {
-      // hold in infinite loop
-    }
-  }
-  radio.setPALevel(RF24_PA_LEVEL);
-  radio.setChannel(_channel);
-  network.begin(_node);
-}
-
-/// @brief  Sends a payload to a specific node.
-/// @tparam T The type of the payload.
-/// @param to The node ID to send the payload to.
-/// @param type The type of the payload.
-/// @param payload The payload to send.
-/// @return True if the message is sent successfully, false otherwise.
-template <typename T>
-bool SensorNode::sendPayload(uint16_t to, char type, const T &payload)
-{
-  network.update(); // keep the network updated
-  RF24NetworkHeader header(to, type);
-  delay(PAYLOAD_SEND_DELAY); // ensure reliable connectivity
-  bool ok = network.write(header, &payload, sizeof(payload));
-  Serial.print(ok ? F(" (status = 1)") : F(" (status = 0)"));
-  return ok;
-}
-
 /// @brief Receives a payload from a specific node.
 /// @details This function updates the network and checks if there is any payload available.
 /// If there is, it reads the header and processes the payload.
-void SensorNode::receivePayload()
+RF24NetworkHeader SensorNode::receivePayload()
 {
   network.update(); // Pump the network regularly
   while (network.available())
@@ -131,6 +96,8 @@ void SensorNode::receivePayload()
       log(F("*** WARNING *** Unknown message type "), header.type);
       network.read(header, 0, 0);
     }
+
+    return header;
   }
 }
 
@@ -409,15 +376,4 @@ void SensorNode::checkAlerts()
       }
     }
   }
-}
-
-/// @brief Logs a message to the serial monitor.
-/// @tparam ...Args This is a variadic template that accepts any number of arguments.
-/// @param ...args This is a parameter pack that accepts any number of arguments.
-template <typename... Args>
-void SensorNode::log(Args... args)
-{
-  Serial.println();
-  Serial.print(millis());
-  (Serial.print(args), ...);
 }

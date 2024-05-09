@@ -1,4 +1,4 @@
-#include "sensor_node.h"
+#include "SensorNode.h"
 #include <SPI.h>
 #include <RF24.h>
 #include <RF24Network.h>
@@ -8,7 +8,7 @@ char name[NAME_LENGTH] = "NODE01";
 int channel = 90;
 uint16_t masterNode = 00;
 
-SensorNode sensorNode(node, name, channel, masterNode); 
+SensorNode sensorNode(node, name, channel, masterNode);
 
 int tempPin = 1;
 int lightPin = 2;

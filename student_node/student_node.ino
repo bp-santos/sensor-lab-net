@@ -1,13 +1,14 @@
-#include "student_node.h"
 #include <SPI.h>
 #include <RF24.h>
 #include <RF24Network.h>
+#include "HomeStudentNode.h"
 
 uint16_t sensorNode = 01;
 char name[NAME_LENGTH] = "BERN01";
 int channel = 90;
 
-StudentNode studentNode(sensorNode, name, channel);
+// CampusStudentNode studentNode(sensorNode, name, channel);
+HomeStudentNode studentNode(sensorNode, name, channel);
 
 void setup()
 {
@@ -21,19 +22,6 @@ void setup()
 
 void loop()
 {
-  studentNode.performEssentialOperations();
-  studentNode.sendReadingsRequestToSensorNode();
-  /*studentNode.sendMessage("BERN02", 'M', "Hello World");
-
-  RF24NetworkHeader header = studentNode.receiveMessageHeader();
-  if (header.type == 'M')
-  {
-    char message[32];
-    studentNode.readMessage(header, message);
-
-    Serial.print(F(": Received message from "));
-    Serial.print(header.from_node);
-    Serial.print(F(": "));
-    Serial.println(message);
-  }*/
+  //studentNode.performEssentialOperations();
+  //studentNode.sendReadingsRequestToSensorNode();
 }

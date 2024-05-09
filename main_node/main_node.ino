@@ -1,4 +1,4 @@
-#include "main_node.h"
+#include "MainNode.h"
 #include <WiFi.h>
 #include <PubSubClient.h>
 #include <RF24.h>

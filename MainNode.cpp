@@ -1,4 +1,4 @@
-#include "main_node.h"
+#include "MainNode.h"
 
 /// @brief Constructor for the MainNode class.
 /// @param node  The node ID of the main node.
@@ -9,9 +9,7 @@
 /// @param port  The MQTT server port to connect to.
 /// @param topic  The MQTT topic to publish to.
 MainNode::MainNode(uint16_t node, int channel, char *ssid, char *wifiPassword, char *server, short port, char *topic)
-    : radio(RADIO_CE_PIN, RADIO_CSN_PIN), network(radio), client(espClient), _node(node), _channel(channel), _ssid(ssid), _wifiPassword(wifiPassword), _server(server), _port(port), _topic(topic)
-{
-}
+    : PreInstalledNode(channel, node), client(espClient), _ssid(ssid), _wifiPassword(wifiPassword), _server(server), _port(port), _topic(topic) {}
 
 /// @brief Initializes the main node.
 /// @details This function initializes the main node by setting up the WiFi connection, the RF24 network, and the MQTT connection.
@@ -34,24 +32,6 @@ void MainNode::setupWiFi()
     log(F(": WiFi connection failed, rc="), WiFi.status(), F(" try again in 5 seconds"));
     delay(WIFI_CONNECT_DELAY); // Wait 5 seconds before retrying
   }
-}
-
-/// @brief Sets up the RF24Network for the main node.
-/// @details This function initializes the SPI and the radio hardware.
-void MainNode::setupRF24Network()
-{
-  SPI.begin();
-  if (!radio.begin())
-  {
-    Serial.println(F("Radio hardware not responding!"));
-    while (1)
-    {
-      // hold in infinite loop
-    }
-  }
-  radio.setPALevel(RF24_PA_LEVEL);
-  radio.setChannel(_channel);
-  network.begin(_node);
 }
 
 /// @brief Checks the MQTT connection.
@@ -81,7 +61,7 @@ void MainNode::setupMQTT()
 /// @brief Receives a payload from a specific node.
 /// @details This function updates the network and checks if there is any payload available.
 /// If there is, it reads the header and processes the payload.
-void MainNode::receivePayload()
+RF24NetworkHeader MainNode::receivePayload()
 {
   network.update(); // Pump the network regularly
   while (network.available())
@@ -112,6 +92,7 @@ void MainNode::receivePayload()
       log(F("*** WARNING *** Unknown message type "), header.type);
       network.read(header, 0, 0);
     }
+    return header;
   }
 }
 
@@ -251,15 +232,4 @@ int MainNode::decimalToOctal(uint16_t decimalNumber)
     base *= 10;
   }
   return octalNumber;
-}
-
-/// @brief Logs a message to the serial monitor.
-/// @tparam ...Args This is a variadic template that accepts any number of arguments.
-/// @param ...args This is a parameter pack that accepts any number of arguments.
-template <typename... Args>
-void MainNode::log(Args... args)
-{
-  Serial.println();
-  Serial.print(millis());
-  (Serial.print(args), ...);
 }

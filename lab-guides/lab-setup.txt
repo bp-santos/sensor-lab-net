@@ -24,3 +24,5 @@ To install and run the Node-RED User Interface on Windows, follow these steps:
 4. Run: npm install node-red
 5. Run: node-red
 6. Open http://127.0.0.1:1880/
+
+Since the Arduino UNO boards available to students do not have WiFi capability, we need to create an external script to be run on the computer and send the MQTT information via the Serial port.
