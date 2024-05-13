@@ -34,7 +34,7 @@ void CampusStudentNode::performEssentialOperations()
 /// @brief Receives a payload from the sensor node.
 /// @details This function updates the network and checks if there is any payload available.
 /// If there is, it reads the header and processes the payload.
-RF24NetworkHeader CampusStudentNode::receivePayload()
+void CampusStudentNode::receivePayload()
 {
     network.update(); // Pump the network regularly
     while (network.available())
@@ -65,8 +65,17 @@ RF24NetworkHeader CampusStudentNode::receivePayload()
             network.read(header, &temp, sizeof(temp));
             log(F(": Sensor readings received from "), header.from_node, F(" - [temp: "), temp.temperature, F("; light: "), temp.phototransistor, F("]"));
         }
-
-        return header;
+        if (header.type == SIMPLE_MESSAGE)
+        {
+            char message[32];
+            network.read(header, &message, sizeof(message));
+            log(F(": Message received from "), header.from_node, F(": "), message);
+        }
+        if (header.type != SELF_ID_REQUEST && header.type != ID_REQUEST && header.type != ALERT_REQUEST && header.type != READINGS_REQUEST && header.type != SIMPLE_MESSAGE)
+        {
+            log(F("*** WARNING *** Unknown message type "), header.type);
+            network.read(header, 0, 0);
+        }
     }
 }
 

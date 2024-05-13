@@ -6,9 +6,9 @@
 uint16_t node = 01;
 char name[NAME_LENGTH] = "NODE01";
 int channel = 90;
-uint16_t masterNode = 00;
+uint16_t mainNode = 00;
 
-SensorNode sensorNode(node, name, channel, masterNode);
+SensorNode sensorNode(node, name, channel, mainNode);
 
 int tempPin = 1;
 int lightPin = 2;

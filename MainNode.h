@@ -24,7 +24,7 @@ public:
   MainNode(uint16_t node, int channel, char *ssid, char *wifiPassword, char *server, short port, char *topic);
   void init() override;
   void checkMQTTConnection();
-  RF24NetworkHeader receivePayload() override;
+  void receivePayload() override;
   void checkNodesConnection() override;
   void publishNetworkStatus();
 

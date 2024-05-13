@@ -29,10 +29,10 @@ struct Active_Nodes
 class SensorNode : public PreInstalledNode
 {
 public:
-  SensorNode(uint16_t node, char *name, int channel, uint16_t masterNode);
+  SensorNode(uint16_t node, char *name, int channel, uint16_t mainNode);
   
   void init() override;
-  RF24NetworkHeader receivePayload() override;
+  void receivePayload() override;
   void checkNodesConnection() override;
 
   void sendKeepAlive();

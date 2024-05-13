@@ -7,9 +7,9 @@ class HomeStudentNode : public StudentNode
 {
 public:
     HomeStudentNode(uint16_t node, char *name, int channel);
-    
+
     void init() override;
-    RF24NetworkHeader receivePayload() override;
+    void receivePayload() override;
 };
 
 #endif

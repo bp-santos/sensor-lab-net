@@ -170,3 +170,10 @@ Master's Thesis in Wireless Sensor Networks (WSN) using Arduino boards, nRF24L01
 05/05/2024
 - Fixed errors resulting from the simplifications made the previous day
 - Everything is now working as before but with the simplifications
+
+09/05/2024
+- Simplified overall code and created new classes to support inheritance
+
+13/05/2024
+- Fixed bugs from the previous commit
+- Prepared everything to be able to start working on the Lab 2

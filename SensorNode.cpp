@@ -55,7 +55,7 @@ int SensorNode::octalToDecimal(uint16_t octalNumber)
 /// @brief Receives a payload from a specific node.
 /// @details This function updates the network and checks if there is any payload available.
 /// If there is, it reads the header and processes the payload.
-RF24NetworkHeader SensorNode::receivePayload()
+void SensorNode::receivePayload()
 {
   network.update(); // Pump the network regularly
   while (network.available())
@@ -96,8 +96,6 @@ RF24NetworkHeader SensorNode::receivePayload()
       log(F("*** WARNING *** Unknown message type "), header.type);
       network.read(header, 0, 0);
     }
-
-    return header;
   }
 }
 
@@ -261,7 +259,7 @@ void SensorNode::receiveKeepAlive(RF24NetworkHeader &header)
   log(F(": Keep alive received from "), header.from_node);
 }
 
-/// @brief  Sends a keep alive message to the master node at regular intervals.
+/// @brief  Sends a keep alive message to the main node at regular intervals.
 void SensorNode::sendKeepAlive()
 {
   unsigned long now = millis();
@@ -314,7 +312,7 @@ void SensorNode::checkNodesConnection()
   }
 }
 
-/// @brief  Sends the network status to the master node at regular intervals.
+/// @brief  Sends the network status to the main node at regular intervals.
 void SensorNode::sendNetworkStatus()
 {
   unsigned long now = millis();
@@ -327,7 +325,7 @@ void SensorNode::sendNetworkStatus()
   }
 }
 
-/// @brief  Sends a begin flag to the master node.
+/// @brief  Sends a begin flag to the main node.
 /// @details The flag indicates the beginning of the data transmission.
 void SensorNode::sendBeginFlagArray()
 {
@@ -335,7 +333,7 @@ void SensorNode::sendBeginFlagArray()
   sendPayload(_mainNode, 'B', 0);
 }
 
-/// @brief  Sends an array of active nodes to the master node.
+/// @brief  Sends an array of active nodes to the main node.
 void SensorNode::sendArrayOfActiveNodes()
 {
   for (int i = 0; i < MAX_STUDENT_NODES; ++i)

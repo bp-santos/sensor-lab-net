@@ -9,7 +9,7 @@ public:
     CampusStudentNode(uint16_t sensorNode, char *name, int channel);
     
     void init() override;
-    RF24NetworkHeader receivePayload() override;
+    void receivePayload() override;
 
     void performEssentialOperations();
     void sendReadingsRequestToSensorNode();

@@ -61,7 +61,7 @@ void MainNode::setupMQTT()
 /// @brief Receives a payload from a specific node.
 /// @details This function updates the network and checks if there is any payload available.
 /// If there is, it reads the header and processes the payload.
-RF24NetworkHeader MainNode::receivePayload()
+void MainNode::receivePayload()
 {
   network.update(); // Pump the network regularly
   while (network.available())
@@ -92,7 +92,6 @@ RF24NetworkHeader MainNode::receivePayload()
       log(F("*** WARNING *** Unknown message type "), header.type);
       network.read(header, 0, 0);
     }
-    return header;
   }
 }
 

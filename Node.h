@@ -33,6 +33,8 @@ public:
 
     void setupRF24Network();
 
+    // Note: Template functions must be defined in the header file.
+
     /// @brief  Sends a payload to a specific node.
     /// @tparam T The type of the payload.
     /// @param to The node ID to send the payload to.
@@ -66,7 +68,7 @@ private:
     int _channel;
 
     virtual void init() = 0;
-    virtual RF24NetworkHeader receivePayload() = 0;
+    virtual void receivePayload() = 0;
 };
 
 #endif
