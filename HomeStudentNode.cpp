@@ -23,17 +23,8 @@ void HomeStudentNode::receivePayload()
     while (network.available())
     {                             // Is there anything ready for us?
         RF24NetworkHeader header; // If so, take a look at it
-        network.peek(header);
-        if (header.type == SIMPLE_MESSAGE)
-        {
-            char message[32];
-            network.read(header, &message, sizeof(message));
-            log(F(": Message received from "), header.from_node, F(": "), message);
-        }
-        if (header.type != SIMPLE_MESSAGE)
-        {
-            log(F("*** WARNING *** Unknown message type "), header.type);
-            network.read(header, 0, 0);
-        }
+        char message[32];
+        network.read(header, &message, sizeof(message));
+        log(F(": Message received from "), header.from_node, F(": "), message);
     }
 }

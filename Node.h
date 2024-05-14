@@ -26,15 +26,6 @@ struct Sensor_Node
 class Node
 {
 public:
-    RF24Network network;
-    uint16_t _node;
-
-    Node(int channel, uint16_t node);
-
-    void setupRF24Network();
-
-    // Note: Template functions must be defined in the header file.
-
     /// @brief  Sends a payload to a specific node.
     /// @tparam T The type of the payload.
     /// @param to The node ID to send the payload to.
@@ -62,6 +53,13 @@ public:
         Serial.print(millis());
         (Serial.print(args), ...);
     }
+
+protected:
+    RF24Network network;
+    uint16_t _node;
+
+    Node(int channel, uint16_t node);
+    void setupRF24Network();
 
 private:
     RF24 radio;

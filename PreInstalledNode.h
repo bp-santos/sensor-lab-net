@@ -20,9 +20,10 @@ class PreInstalledNode : public Node
 {
 public:
   PreInstalledNode(int channel, uint16_t node) : Node(channel, node) {}
+
 private:
-    virtual void checkNodesConnection() = 0;
-    virtual void receiveKeepAlive(RF24NetworkHeader &header) = 0;
+  virtual void checkNodesConnection() = 0;
+  virtual void receiveKeepAlive(RF24NetworkHeader &header) = 0;
 };
 
 #endif

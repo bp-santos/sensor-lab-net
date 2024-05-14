@@ -177,3 +177,7 @@ Master's Thesis in Wireless Sensor Networks (WSN) using Arduino boards, nRF24L01
 13/05/2024
 - Fixed bugs from the previous commit
 - Prepared everything to be able to start working on the Lab 2
+
+14/05/2024
+- Finished Lab 2 for at home environment
+- Fixed some bugs from the mega update

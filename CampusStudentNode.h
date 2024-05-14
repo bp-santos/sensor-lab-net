@@ -7,7 +7,7 @@ class CampusStudentNode : public StudentNode
 {
 public:
     CampusStudentNode(uint16_t sensorNode, char *name, int channel);
-    
+
     void init() override;
     void receivePayload() override;
 
@@ -15,7 +15,8 @@ public:
     void sendReadingsRequestToSensorNode();
     void sendAlertRequestToSensorNode(char type, int value);
     void sendAlertDeactivationToSensorNode();
-    void sendMessage(char *name, char type, const void *message);
+    template <typename T>
+    bool sendPayload(uint16_t to, char type, const T &payload);
 
 private:
     uint16_t _sensorNode;

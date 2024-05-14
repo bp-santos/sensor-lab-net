@@ -16,7 +16,7 @@ void CampusStudentNode::init()
     while (_node == temp) // wait until the node ID changes
     {
         log(F(": New ID request sent to "), _sensorNode);
-        sendPayload(_sensorNode, SELF_ID_REQUEST, _name);
+        Node::sendPayload(_sensorNode, SELF_ID_REQUEST, _name);
         receivePayload();
         delay(ID_REQUEST_DELAY); // retry after 5s
     }
@@ -29,6 +29,24 @@ void CampusStudentNode::performEssentialOperations()
     sendKeepAlive(KEEP_ALIVE_INTERVAL);
     restart();
     receivePayload();
+}
+
+/// @brief Override of the sendPayload method to only allow certain message types.
+/// @param to The node ID to send the message to.
+/// @param type The type of the message.
+/// @param payload The payload to send.
+/// @return True if the message was sent successfully, false otherwise.
+template <typename T>
+bool CampusStudentNode::sendPayload(uint16_t to, char type, const T &payload)
+{
+
+    if (type == SELF_ID_REQUEST || type == ID_REQUEST || type == ALERT_REQUEST || type == READINGS_REQUEST)
+    {
+        log(F(": Message types 'A', 'I', 'N', and 'R' are reserved"));
+        return false;
+    }
+
+    return Node::sendPayload(to, type, payload);
 }
 
 /// @brief Receives a payload from the sensor node.
@@ -65,13 +83,7 @@ void CampusStudentNode::receivePayload()
             network.read(header, &temp, sizeof(temp));
             log(F(": Sensor readings received from "), header.from_node, F(" - [temp: "), temp.temperature, F("; light: "), temp.phototransistor, F("]"));
         }
-        if (header.type == SIMPLE_MESSAGE)
-        {
-            char message[32];
-            network.read(header, &message, sizeof(message));
-            log(F(": Message received from "), header.from_node, F(": "), message);
-        }
-        if (header.type != SELF_ID_REQUEST && header.type != ID_REQUEST && header.type != ALERT_REQUEST && header.type != READINGS_REQUEST && header.type != SIMPLE_MESSAGE)
+        if (header.type != SELF_ID_REQUEST && header.type != ID_REQUEST && header.type != ALERT_REQUEST && header.type != READINGS_REQUEST)
         {
             log(F("*** WARNING *** Unknown message type "), header.type);
             network.read(header, 0, 0);
@@ -83,7 +95,7 @@ void CampusStudentNode::receivePayload()
 void CampusStudentNode::sendReadingsRequestToSensorNode()
 {
     log(F(": Readings request sent to "), _sensorNode);
-    sendPayload(_sensorNode, READINGS_REQUEST, 0);
+    Node::sendPayload(_sensorNode, READINGS_REQUEST, 0);
     delay(5000); // TODO: colocar um argumento para o delay
 }
 
@@ -97,36 +109,14 @@ void CampusStudentNode::sendAlertRequestToSensorNode(char type, int value)
     message.value = value;
 
     log(F(": Alert activation sent to "), _sensorNode, F(" - [type: "), type, F("; value: "), value, F("]"));
-    sendPayload(_sensorNode, ALERT_REQUEST, message);
+    Node::sendPayload(_sensorNode, ALERT_REQUEST, message);
 }
 
 /// @brief Sends an alert deactivation to the sensor node.
 void CampusStudentNode::sendAlertDeactivationToSensorNode()
 {
     log(F(": Alert deactivation sent to "), _sensorNode);
-    sendPayload(_sensorNode, ALERT_DEACTIVATION, 0);
-}
-
-/// @brief Sends a radio message to a specific node.
-/// @details This function first sends an ID request to the sensor node to get the destination ID.
-/// It then waits to receive the node ID and sends the radio message to that node.
-/// @param name The name of the destination node.
-/// @param message The message to send.
-void CampusStudentNode::sendMessage(char *name, char type, const void *message)
-{
-    if (type == SELF_ID_REQUEST || type == ID_REQUEST || type == ALERT_REQUEST || type == READINGS_REQUEST)
-    {
-        log(F(": Message types 'A', 'I', 'N', and 'R' are reserved"));
-        return;
-    }
-
-    log(F(": ID request sent to "), _sensorNode);
-    sendPayload(_sensorNode, ID_REQUEST, name);
-
-    receivePayload();
-
-    log(F(": Message sent to "), nodeID, F("( "), name, F(") - "), (char *)message);
-    sendPayload(nodeID, type, message);
+    Node::sendPayload(_sensorNode, ALERT_DEACTIVATION, 0);
 }
 
 /// @brief Sends a keep alive message to the sensor node at regular intervals.
@@ -138,7 +128,7 @@ void CampusStudentNode::sendKeepAlive(const unsigned long interval)
     { // If it's time to send a message, send it!
         last_sent_keep_alive = now;
         log(F(": Keep alive sent to "), _sensorNode);
-        sendPayload(_sensorNode, KEEP_ALIVE, 0);
+        Node::sendPayload(_sensorNode, KEEP_ALIVE, 0);
     }
 }
 

@@ -22,10 +22,12 @@ class MainNode : public PreInstalledNode
 {
 public:
   MainNode(uint16_t node, int channel, char *ssid, char *wifiPassword, char *server, short port, char *topic);
+
   void init() override;
   void checkMQTTConnection();
   void receivePayload() override;
   void checkNodesConnection() override;
+
   void publishNetworkStatus();
 
 private:
@@ -41,9 +43,10 @@ private:
   short _port;
   char *_topic;
 
+  void receiveKeepAlive(RF24NetworkHeader &header) override;
+  
   void setupWiFi();
   void setupMQTT();
-  void receiveKeepAlive(RF24NetworkHeader &header) override;
   void receiveReadings(RF24NetworkHeader &header);
   void receiveBeginFlag(RF24NetworkHeader &header);
   void receiveNodeID(RF24NetworkHeader &header);

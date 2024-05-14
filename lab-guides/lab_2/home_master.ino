@@ -2,7 +2,6 @@
 #include <RF24.h>
 #include <RF24Network.h>
 #include "HomeStudentNode.h"
-#include "CampusStudentNode.h"
 
 uint16_t this_node = 00;
 uint16_t other_node = 01;

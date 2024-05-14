@@ -30,7 +30,7 @@ class SensorNode : public PreInstalledNode
 {
 public:
   SensorNode(uint16_t node, char *name, int channel, uint16_t mainNode);
-  
+
   void init() override;
   void receivePayload() override;
   void checkNodesConnection() override;

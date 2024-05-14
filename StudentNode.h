@@ -12,7 +12,13 @@ const char SELF_ID_REQUEST = 'N';
 const char ID_REQUEST = 'I';
 const char ALERT_REQUEST = 'A';
 const char ALERT_DEACTIVATION = 'D';
-const char SIMPLE_MESSAGE = 'M';
+
+template <typename T>
+struct Message
+{
+  char type = '\0';
+  T content;
+};
 
 struct Alert_Request
 {
@@ -24,32 +30,31 @@ class StudentNode : public Node
 {
 
 public:
+  /// @brief Receive a simple message
+  /// @tparam T The type of the message content
+  /// @return The message received
+  template <typename T>
+  Message<T> receiveSimpleMessage()
+  {
+    network.update(); // Pump the network regularly
+    Message<T> message;
+    while (network.available())
+    {                           // Is there anything ready for us?
+      RF24NetworkHeader header; // If so, take a look at it
+      network.read(header, &message.content, sizeof(message.content));
+      message.type = header.type;
+      log(F(": Message received from "), header.from_node, F(" type "), (char)header.type);
+    }
+    return message;
+  }
+
+protected:
   char _name[NAME_LENGTH];
 
   StudentNode(uint16_t node, char *name, int channel)
       : Node(channel, node)
   {
     strcpy(_name, name);
-  }
-
-  /// @brief Receives a payload from a specific node.
-  /// @details This function updates the network and checks if there is any payload available.
-  /// If there is, it reads the header and processes the payload.
-  char *receiveSimpleMessage()
-  {
-    network.update(); // Pump the network regularly
-    char message[32];
-    while (network.available())
-    {                           // Is there anything ready for us?
-      RF24NetworkHeader header; // If so, take a look at it
-      network.peek(header);
-      if (header.type == SIMPLE_MESSAGE)
-      {
-        network.read(header, &message, sizeof(message));
-        log(F(": Message received from "), header.from_node, F(": "), message);
-      }
-    }
-    return message;
   }
 };
 
