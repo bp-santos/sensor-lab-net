@@ -17,6 +17,7 @@ public:
     void sendAlertDeactivationToSensorNode();
     template <typename T>
     bool sendPayload(uint16_t to, char type, const T &payload);
+    void sendMessage(char *name, char type, const void *message);
 
 private:
     uint16_t _sensorNode;

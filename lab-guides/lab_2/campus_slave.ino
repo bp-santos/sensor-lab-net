@@ -2,12 +2,13 @@
 #include <RF24.h>
 #include <RF24Network.h>
 #include "HomeStudentNode.h"
+#include "CampusStudentNode.h"
 
-uint16_t this_node = 01;
-char name[NAME_LENGTH] = "BERN01";
+uint16_t sensorNode = 01;
+char name[NAME_LENGTH] = "BERN02";
 int channel = 90;
 
-HomeStudentNode studentNode(this_node, name, channel);
+CampusStudentNode studentNode(sensorNode, name, channel);
 
 #define R_LED_PIN 3
 #define Y_LED_PIN 4
@@ -37,6 +38,8 @@ void setup()
 
 void loop()
 {
+  studentNode.performEssentialOperations();
+
   if (millis() - previousMillisBlink >= blinkInterval)
   {
     previousMillisBlink = millis();

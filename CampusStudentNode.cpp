@@ -119,6 +119,28 @@ void CampusStudentNode::sendAlertDeactivationToSensorNode()
     Node::sendPayload(_sensorNode, ALERT_DEACTIVATION, 0);
 }
 
+/// @brief Sends a radio message to a specific node.
+/// @details This function first sends an ID request to the sensor node to get the destination ID.
+/// It then waits to receive the node ID and sends the radio message to that node.
+/// @param name The name of the destination node.
+/// @param message The message to send.
+void CampusStudentNode::sendMessage(char *name, char type, const void *message)
+{
+    if (type == SELF_ID_REQUEST || type == ID_REQUEST || type == ALERT_REQUEST || type == READINGS_REQUEST)
+    {
+        log(F(": Message types 'A', 'I', 'N', and 'R' are reserved"));
+        return;
+    }
+
+    log(F(": ID request sent to "), _sensorNode);
+    sendPayload(_sensorNode, ID_REQUEST, name);
+
+    receivePayload();
+
+    log(F(": Message sent to "), nodeID, F("( "), name, F(") - "), (char *)message);
+    sendPayload(nodeID, type, message);
+}
+
 /// @brief Sends a keep alive message to the sensor node at regular intervals.
 /// @param interval The interval at which to send the keep alive message.
 void CampusStudentNode::sendKeepAlive(const unsigned long interval)
