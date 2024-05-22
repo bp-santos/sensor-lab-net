@@ -11,6 +11,7 @@ Master's Thesis in Wireless Sensor Networks (WSN) using Arduino boards, nRF24L01
     - correspondencia entre id e nome lógico - sistemas distribuidos - serviços de nomes
     - endereçamento de nós
 - a funcionalidade das bibliotecas tem de mimicar a biblioteca wire
+- quando chegar a escrita fazer comentario de comparação com a utilização de mqtt para substituir a rede para fundamentar tambem a minha rede
 
 ## To-do
 - poder gerar mais que um alerta por estudante
@@ -185,3 +186,6 @@ Master's Thesis in Wireless Sensor Networks (WSN) using Arduino boards, nRF24L01
 16/05/2024
 - Finished Lab 2 for the campus environment
 - Prepared everything to be able to start working on the Lab 3
+
+22/05/2024
+- Lab 2 fully functional including with data from pre installed sensors

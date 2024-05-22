@@ -1,7 +1,6 @@
 #include <SPI.h>
 #include <RF24.h>
 #include <RF24Network.h>
-#include "HomeStudentNode.h"
 #include "CampusStudentNode.h"
 
 uint16_t sensorNode = 01;
@@ -65,7 +64,7 @@ void loop()
     studentNode.log(F(": Light received: "), msg.content);
     analogWrite(Y_LED_PIN, 255 - msg.content);
   }
-  else if (msg.type == 'R')
+  else if (msg.type == 'M')
   {
     studentNode.log(F(": Rotation received: "), msg.content);
     blinkInterval = map(msg.content, 0, 180, minBlinkRate * 1000, maxBlinkRate * 1000);

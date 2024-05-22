@@ -158,17 +158,18 @@ void SensorNode::sendNextAvailableNodeID(uint16_t to, uint16_t id)
 /// @return The node ID of the node with the requested name.
 uint16_t SensorNode::receiveNodeIDRequestFromName(RF24NetworkHeader &header)
 {
-  char name[NAME_LENGTH];
-  network.read(header, &name, sizeof(name));
+  char message[NAME_LENGTH] = "";
+  network.read(header, &message, sizeof(message));
 
   for (int i = 0; i < MAX_STUDENT_NODES; i++)
   {
-    if (active_nodes[i].status && active_nodes[i].node.name == name)
+    if (!strcmp(active_nodes[i].node.name, message) && active_nodes[i].status)
     {
-      log(F(": Node ID request received from "), header.from_node, F(" with the name "), name);
+      log(F(": Node ID request received from "), header.from_node, F(" with the name "), message);
       return active_nodes[i].node.nodeID;
     }
   }
+  return 00;
 }
 
 /// @brief  Sends the node ID to a specific node.
@@ -340,7 +341,7 @@ void SensorNode::sendArrayOfActiveNodes()
   {
     if (active_nodes[i].status)
     {
-      log(F(": "), millis(), F(": Active node ("), active_nodes[i].node.name, F(") sent to "), _mainNode);
+      log(F(": Active node ("), active_nodes[i].node.name, F(") sent to "), _mainNode);
       sendPayload(_mainNode, 'S', active_nodes[i].node);
     }
   }

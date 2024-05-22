@@ -28,25 +28,6 @@ void CampusStudentNode::performEssentialOperations()
 {
     sendKeepAlive(KEEP_ALIVE_INTERVAL);
     restart();
-    receivePayload();
-}
-
-/// @brief Override of the sendPayload method to only allow certain message types.
-/// @param to The node ID to send the message to.
-/// @param type The type of the message.
-/// @param payload The payload to send.
-/// @return True if the message was sent successfully, false otherwise.
-template <typename T>
-bool CampusStudentNode::sendPayload(uint16_t to, char type, const T &payload)
-{
-
-    if (type == SELF_ID_REQUEST || type == ID_REQUEST || type == ALERT_REQUEST || type == READINGS_REQUEST)
-    {
-        log(F(": Message types 'A', 'I', 'N', and 'R' are reserved"));
-        return false;
-    }
-
-    return Node::sendPayload(to, type, payload);
 }
 
 /// @brief Receives a payload from the sensor node.
@@ -69,25 +50,10 @@ void CampusStudentNode::receivePayload()
         if (header.type == ID_REQUEST)
         {
             network.read(header, &nodeID, sizeof(nodeID));
-            log(F(": ID received "), nodeID, F(" from "), header.from_node);
+            log(F(": Node ID received "), nodeID, F(" from "), header.from_node);
         }
-        if (header.type == ALERT_REQUEST)
-        {
-            Alert_Request temp;
-            network.read(header, &temp, sizeof(temp));
-            log(F(": Sensor alert received from "), header.from_node, F(" - [type: "), temp.type, F("; value: "), temp.value, F("]"));
-        }
-        if (header.type == READINGS_REQUEST)
-        {
-            Sensor_Node temp;
-            network.read(header, &temp, sizeof(temp));
-            log(F(": Sensor readings received from "), header.from_node, F(" - [temp: "), temp.temperature, F("; light: "), temp.phototransistor, F("]"));
-        }
-        if (header.type != SELF_ID_REQUEST && header.type != ID_REQUEST && header.type != ALERT_REQUEST && header.type != READINGS_REQUEST)
-        {
-            log(F("*** WARNING *** Unknown message type "), header.type);
-            network.read(header, 0, 0);
-        }
+        else
+            break;
     }
 }
 
@@ -96,7 +62,29 @@ void CampusStudentNode::sendReadingsRequestToSensorNode()
 {
     log(F(": Readings request sent to "), _sensorNode);
     Node::sendPayload(_sensorNode, READINGS_REQUEST, 0);
-    delay(5000); // TODO: colocar um argumento para o delay
+}
+
+/// TODO: juntar à de cima para evitar erros dos alunos
+/// @brief Receives the readings from the sensor node.
+/// @return The readings received from the sensor node.
+Sensor_Node CampusStudentNode::receiveReadingsFromSensorNode()
+{
+    network.update(); // Pump the network regularly
+    while (network.available())
+    {                             // Is there anything ready for us?
+        RF24NetworkHeader header; // If so, take a look at it
+        network.peek(header);
+
+        if (header.type == READINGS_REQUEST)
+        {
+            Sensor_Node temp;
+            network.read(header, &temp, sizeof(temp));
+            log(F(": Sensor readings received from "), header.from_node, F(" - [temp: "), temp.temperature, F("; light: "), temp.phototransistor, F("]"));
+            return temp;
+        }
+        else
+            break;
+    }
 }
 
 /// @brief Sends an alert request to the sensor node.
@@ -119,26 +107,26 @@ void CampusStudentNode::sendAlertDeactivationToSensorNode()
     Node::sendPayload(_sensorNode, ALERT_DEACTIVATION, 0);
 }
 
-/// @brief Sends a radio message to a specific node.
-/// @details This function first sends an ID request to the sensor node to get the destination ID.
-/// It then waits to receive the node ID and sends the radio message to that node.
-/// @param name The name of the destination node.
-/// @param message The message to send.
-void CampusStudentNode::sendMessage(char *name, char type, const void *message)
+/// @brief Receives an alert from the sensor node.
+/// @return The alert received from the sensor node.
+Alert_Request CampusStudentNode::receiveAlertFromSensorNode()
 {
-    if (type == SELF_ID_REQUEST || type == ID_REQUEST || type == ALERT_REQUEST || type == READINGS_REQUEST)
-    {
-        log(F(": Message types 'A', 'I', 'N', and 'R' are reserved"));
-        return;
+    network.update(); // Pump the network regularly
+    while (network.available())
+    {                             // Is there anything ready for us?
+        RF24NetworkHeader header; // If so, take a look at it
+        network.peek(header);
+
+        if (header.type == ALERT_REQUEST)
+        {
+            Alert_Request temp;
+            network.read(header, &temp, sizeof(temp));
+            log(F(": Sensor alert received from "), header.from_node, F(" - [type: "), temp.type, F("; value: "), temp.value, F("]"));
+            return temp;
+        }
+        else
+            break;
     }
-
-    log(F(": ID request sent to "), _sensorNode);
-    sendPayload(_sensorNode, ID_REQUEST, name);
-
-    receivePayload();
-
-    log(F(": Message sent to "), nodeID, F("( "), name, F(") - "), (char *)message);
-    sendPayload(nodeID, type, message);
 }
 
 /// @brief Sends a keep alive message to the sensor node at regular intervals.

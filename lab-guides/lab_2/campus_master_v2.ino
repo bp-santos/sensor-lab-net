@@ -1,7 +1,6 @@
 #include <SPI.h>
 #include <RF24.h>
 #include <RF24Network.h>
-#include "HomeStudentNode.h"
 #include "CampusStudentNode.h"
 
 uint16_t sensorNode = 01;
@@ -11,9 +10,7 @@ int channel = 90;
 
 CampusStudentNode studentNode(sensorNode, name, channel);
 
-const int tempSensor = A0;
 const int rotSensor = A3;
-const int lightSensor = A1;
 
 const unsigned long interval = 2000;
 unsigned long previousMillis = 0;
@@ -32,29 +29,35 @@ void loop()
 {
   studentNode.performEssentialOperations();
 
-  if(millis() - previousMillis > interval) {
-    handleLight();
+  if (millis() - previousMillis > interval)
+  {
+    studentNode.sendReadingsRequestToSensorNode();
+    Sensor_Node temp = studentNode.receiveReadingsFromSensorNode();
+
+    handleLight(temp.phototransistor);
+    handleTemperature(temp.temperature);
     handleRotation();
-    handleTemperature();
+    
     previousMillis = millis();
     Serial.println();
   }
 }
 
-void handleLight() {
-  int light = map(analogRead(lightSensor), 0, 1023, 0, 255);
+void handleLight(int light)
+{
   studentNode.log(F(": Light sent: "), light);
-  studentNode.sendMessage(other_node_name, 'L', &light);
+  studentNode.sendMessage(other_node_name, 'L', light);
 }
 
-void handleRotation() {
+void handleRotation()
+{
   int rotation = map(analogRead(rotSensor), 0, 1023, 0, 180);
   studentNode.log(F(": Rotation sent: "), rotation);
-  studentNode.sendMessage(other_node_name, 'R', &rotation);
+  studentNode.sendMessage(other_node_name, 'M', rotation);
 }
 
-void handleTemperature() {
-  int temperature = (((analogRead(tempSensor) / 1023.0) * 5.0) - 0.5) * 100;
+void handleTemperature(int temperature)
+{
   studentNode.log(F(": Temperature sent: "), temperature);
-  studentNode.sendMessage(other_node_name, 'T', &temperature);
+  studentNode.sendMessage(other_node_name, 'T', temperature);
 }

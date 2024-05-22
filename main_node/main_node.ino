@@ -10,7 +10,7 @@ int channel = 90;
 // char *wifiPassword = "FUACPFMP";
 char *ssid = "NOS-0856";
 char *wifiPassword = "FG94RWP5";
-char *server = "192.168.1.34";
+char *server = "192.168.1.38";
 short port = 1883;
 char *topic = "Main Node";
 
