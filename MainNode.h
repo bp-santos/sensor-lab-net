@@ -21,7 +21,7 @@ struct Network_Status
 class MainNode : public PreInstalledNode
 {
 public:
-  MainNode(uint16_t node, int channel, char *ssid, char *wifiPassword, char *server, short port, char *topic);
+  MainNode(uint16_t node, int channel);
 
   void init() override;
   void checkMQTTConnection();

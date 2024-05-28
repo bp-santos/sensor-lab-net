@@ -189,3 +189,10 @@ Master's Thesis in Wireless Sensor Networks (WSN) using Arduino boards, nRF24L01
 
 22/05/2024
 - Lab 2 fully functional including with data from pre installed sensors
+
+28/05/2024
+- Re-wrote the lab guides 1 and 2
+- The MainNode.cpp gets the wifi and mqtt credentials from the MainNode_config.h
+    - Changed the MainNode constructor and main_node.ino
+- script.py simplified
+- First version of the Lab 3 controller code

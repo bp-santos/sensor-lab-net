@@ -1,4 +1,5 @@
 #include "MainNode.h"
+#include "MainNode_config.h"
 
 /// @brief Constructor for the MainNode class.
 /// @param node  The node ID of the main node.
@@ -8,8 +9,8 @@
 /// @param server  The MQTT server to connect to.
 /// @param port  The MQTT server port to connect to.
 /// @param topic  The MQTT topic to publish to.
-MainNode::MainNode(uint16_t node, int channel, char *ssid, char *wifiPassword, char *server, short port, char *topic)
-    : PreInstalledNode(channel, node), client(espClient), _ssid(ssid), _wifiPassword(wifiPassword), _server(server), _port(port), _topic(topic) {}
+MainNode::MainNode(uint16_t node, int channel)
+    : PreInstalledNode(channel, node), client(espClient), _ssid(SSID), _wifiPassword(WIFI_PASSWORD), _server(SERVER), _port(PORT), _topic(TOPIC) {}
 
 /// @brief Initializes the main node.
 /// @details This function initializes the main node by setting up the WiFi connection, the RF24 network, and the MQTT connection.
