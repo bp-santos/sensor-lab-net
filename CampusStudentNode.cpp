@@ -129,6 +129,26 @@ Alert_Request CampusStudentNode::receiveAlertFromSensorNode()
     }
 }
 
+/// @brief Gets the node ID of a node with a specific name.
+/// @param name_pointer The name of the node.
+/// @return The node ID of the node with the specific name.
+uint16_t CampusStudentNode::getNodeID(char *name_pointer)
+{
+    char name[NAME_LENGTH];
+    strcpy(name, name_pointer);
+    // log(F(": ID request sent to "), _sensorNode, F("(with name "), name, F(")"));
+    Node::sendPayload(_sensorNode, ID_REQUEST, name);
+    receivePayload();
+
+    if (nodeID == 0) // If the node ID is not found, return
+    {
+        log(F(": Node ID not found"));
+        return 0;
+    }
+
+    return nodeID;
+}
+
 /// @brief Sends a keep alive message to the sensor node at regular intervals.
 /// @param interval The interval at which to send the keep alive message.
 void CampusStudentNode::sendKeepAlive(const unsigned long interval)

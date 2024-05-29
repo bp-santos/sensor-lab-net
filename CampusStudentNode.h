@@ -17,6 +17,7 @@ public:
     void sendAlertRequestToSensorNode(char type, int value);
     void sendAlertDeactivationToSensorNode();
     Alert_Request receiveAlertFromSensorNode();
+    uint16_t getNodeID(char* name_pointer);
 
     /// @brief Override of the sendPayload method to only allow certain message types.
     /// @param to The node ID to send the message to.
@@ -51,17 +52,7 @@ public:
             return;
         }
 
-        char name[NAME_LENGTH];
-        strcpy(name, name_pointer);
-        // log(F(": ID request sent to "), _sensorNode, F("(with name "), name, F(")"));
-        Node::sendPayload(_sensorNode, ID_REQUEST, name);
-        receivePayload();
-
-        if (nodeID == 0) // If the node ID is not found, return
-        {
-            log(F(": Node ID not found"));
-            return;
-        }
+        getNodeID();
 
         log(F(": Message sent to "), nodeID);
         Node::sendPayload(nodeID, type, message);

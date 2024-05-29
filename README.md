@@ -199,3 +199,5 @@ Master's Thesis in Wireless Sensor Networks (WSN) using Arduino boards, nRF24L01
 
 29/05/2024
 - First version of the Lab 3 access code (at home)
+- First version of the Lab 3 access and controller code (at campus)
+- Added a new function to the CampusStudentNode code to be able to get any node ID from its name
