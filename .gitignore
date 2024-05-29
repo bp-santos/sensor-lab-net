@@ -1,8 +1,6 @@
 
 .vscode/
 .arduino/
-Student_Node_2
-Student_Node_1
 Main_Node/Node.cpp
 Main_Node/MainNode.cpp
 Main_Node/MainNode.h
@@ -15,3 +13,6 @@ Sensor_Node/PreInstalledNode.h
 Sensor_Node/SensorNode.cpp
 Sensor_Node/SensorNode.h
 MainNode_config.h
+Access_1
+Access_2
+Controller

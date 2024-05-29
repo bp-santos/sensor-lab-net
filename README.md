@@ -195,4 +195,7 @@ Master's Thesis in Wireless Sensor Networks (WSN) using Arduino boards, nRF24L01
 - The MainNode.cpp gets the wifi and mqtt credentials from the MainNode_config.h
     - Changed the MainNode constructor and main_node.ino
 - script.py simplified
-- First version of the Lab 3 controller code
+- First version of the Lab 3 controller code (at home)
+
+29/05/2024
+- First version of the Lab 3 access code (at home)
