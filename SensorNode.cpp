@@ -17,8 +17,8 @@ void SensorNode::init()
 {
   delay(INIT_DELAY); // delay 2-5s to prevent from running the code twice
   log(F(": Node ID set to "), _node);
-  populateActiveNodesArray();
   setupRF24Network();
+  populateActiveNodesArray();
 }
 
 /// @brief Populates the active nodes array with the node IDs depending on the sensor node ID.
@@ -186,20 +186,38 @@ void SensorNode::sendNodeID(uint16_t to, uint16_t id)
 /// @param header The header of the received message.
 void SensorNode::receiveAlertRequest(RF24NetworkHeader &header)
 {
-  Alert_Request temp;
-  network.read(header, &temp, sizeof(temp));
+  uint8_t buffer[3];
+  network.read(header, &buffer, sizeof(buffer));
+  Alert_Request temp = deserializeAlert(buffer);
 
   for (int i = 0; i < MAX_STUDENT_NODES; ++i)
   {
-    if (active_nodes[i].alerts[0].type == '\0')
+    if (active_nodes[i].node.nodeID == header.from_node)
     {
-      active_nodes[i].alerts[0].type = temp.type;
-      active_nodes[i].alerts[0].value = temp.value;
-      break;
+      for (int j = 0; j < MAX_ALERT_PER_STUDENT; ++j)
+      {
+        if (active_nodes[i].alerts[j].type == '\0')
+        {
+          active_nodes[i].alerts[j].type = temp.type;
+          active_nodes[i].alerts[j].value = temp.value;
+          log(F(": Alert request received from "), header.from_node, F(" - [type: "), temp.type, F("; value: "), temp.value, F("]"));
+          break;
+        }
+      }
     }
   }
+}
 
-  log(F(": Alert request received from "), header.from_node, F(" - [type: "), temp.type, F("; value: "), temp.value, F("]"));
+/// @brief Deserializes a buffer into an Alert_Request.
+/// @param buffer The buffer that is going to be deserialized
+/// @return The Alert_Request it got from the buffer
+Alert_Request SensorNode::deserializeAlert(uint8_t* buffer)
+{
+    Alert_Request temp;
+    temp.type = buffer[0];
+    temp.value = buffer[1] | (buffer[2] << 8);
+    temp.time = buffer[3] | (buffer[4] << 8) | (buffer[5] << 16) | (buffer[6] << 24);
+    return temp;
 }
 
 /// @brief  Receives an alert deactivation request from a specific node.
@@ -208,20 +226,27 @@ void SensorNode::receiveAlertRequest(RF24NetworkHeader &header)
 void SensorNode::receiveAlertDeactivationRequest(RF24NetworkHeader &header)
 {
   network.read(header, 0, 0);
+  cleanAlertArray(header.from_node);
+  log(F(": Alert deactivation request received from "), header.from_node);
+}
 
+/// @brief Receives a node ID and cleans the Alert_Request array from that node
+/// @param to The node ID
+void SensorNode::cleanAlertArray(uint16_t to)
+{
   for (int i = 0; i < MAX_STUDENT_NODES; ++i)
   {
-    if (active_nodes[i].node.nodeID == header.from_node)
+    if (active_nodes[i].node.nodeID == to)
     {
       for (int j = 0; j < MAX_ALERT_PER_STUDENT; ++j)
       {
         active_nodes[i].alerts[j].type = '\0';
         active_nodes[i].alerts[j].value = 0.0;
+        active_nodes[i].alerts[j].time = 0;
       }
       break;
     }
   }
-  log(F(": Alert deactivation request received from "), header.from_node);
 }
 
 /// @brief  Receives a readings request from a specific node.
@@ -237,7 +262,23 @@ void SensorNode::receiveReadingsRequest(RF24NetworkHeader &header)
 void SensorNode::sendReadings(uint16_t to)
 {
   log(F(": Readings sent to "), to, F(" - [temp: "), sensorData.temperature, F("; light: "), sensorData.phototransistor, F("]"));
-  sendPayload(to, READINGS_REQUEST, sensorData);
+  uint8_t buffer[NAME_LENGTH + 4];
+  serializeSensorNode(buffer);
+  sendPayload(to, READINGS_REQUEST, buffer);
+}
+
+/// @brief Serializes an Sensor_Node into a buffer.
+/// @param temp The Sensor_Node that is going to be serialized.
+/// @param buffer The buffer it got from the Sensor_Node
+void SensorNode::serializeSensorNode(uint8_t *buffer)
+{
+  memcpy(buffer, sensorData.name, NAME_LENGTH);
+
+  buffer[NAME_LENGTH] = sensorData.temperature & 0xFF;
+  buffer[NAME_LENGTH + 1] = (sensorData.temperature >> 8) & 0xFF;
+
+  buffer[NAME_LENGTH + 2] = sensorData.phototransistor & 0xFF;
+  buffer[NAME_LENGTH + 3] = (sensorData.phototransistor >> 8) & 0xFF;
 }
 
 /// @brief  Receives a keep alive message from a specific node.
@@ -308,6 +349,7 @@ void SensorNode::checkNodesConnection()
     if (active_nodes[i].status && millis() - active_nodes[i].time > NODE_CONNECTION_CHECK_INTERVAL)
     {
       active_nodes[i].status = false;
+      cleanAlertArray(active_nodes[i].node.nodeID);
       log(F(": Node "), active_nodes[i].node.nodeID, F(" removed from active nodes list"));
     }
   }
@@ -355,24 +397,49 @@ void SensorNode::checkAlerts()
   {
     if (active_nodes[i].status)
     {
-      if ((active_nodes[i].alerts[0].type == 'T' && sensorData.temperature >= active_nodes[i].alerts[0].value) ||
-          (active_nodes[i].alerts[0].type == 'L' && sensorData.phototransistor >= active_nodes[i].alerts[0].value))
+      for (int j = 0; j < MAX_ALERT_PER_STUDENT; ++j)
       {
+        if ((active_nodes[i].alerts[j].type == 'T' && sensorData.temperature >= active_nodes[i].alerts[j].value) ||
+            (active_nodes[i].alerts[j].type == 'L' && sensorData.phototransistor >= active_nodes[i].alerts[j].value))
+        {
+          if (millis() - active_nodes[i].alerts[j].time > NODE_ALERT_CHECK_INTERVAL)
+          {
+            active_nodes[i].alerts[j].time = millis();
 
-        Alert_Request temp;
-        if (active_nodes[i].alerts[0].type == 'T')
-        {
-          temp.value = sensorData.temperature;
-          temp.type = 'T';
+            Alert_Request temp;
+            if (active_nodes[i].alerts[j].type == 'T')
+            {
+              temp.value = sensorData.temperature;
+              temp.type = 'T';
+            }
+            else if (active_nodes[i].alerts[j].type == 'L')
+            {
+              temp.value = sensorData.phototransistor;
+              temp.type = 'L';
+            }
+            log(F(": Alert sent to "), active_nodes[i].node.nodeID, F(" - [type: "), temp.type, F("; value: "), temp.value, F("]"));
+            uint8_t buffer[3];
+            serializeAlert(temp, buffer);
+            sendPayload(active_nodes[i].node.nodeID, ALERT_REQUEST, buffer);
+          }
         }
-        else if (active_nodes[i].alerts[0].type == 'L')
-        {
-          temp.value = sensorData.phototransistor;
-          temp.type = 'L';
-        }
-        log(F(": Alert sent to "), active_nodes[i].node.nodeID, F(" - [type: "), temp.type, F("; value: "), temp.value, F("]"));
-        sendPayload(active_nodes[i].node.nodeID, ALERT_REQUEST, temp);
       }
     }
   }
+}
+
+/// @brief Serializes an Alert_Request into a buffer.
+/// @param temp The Alert_Request that is going to be serialized.
+/// @param buffer The buffer it got from the Alert_Request
+void SensorNode::serializeAlert(const Alert_Request &temp, uint8_t *buffer)
+{
+  buffer[0] = temp.type;
+
+  buffer[1] = temp.value & 0xFF;
+  buffer[2] = (temp.value >> 8) & 0xFF;
+
+  buffer[3] = temp.time & 0xFF;
+  buffer[4] = (temp.time >> 8) & 0xFF;
+  buffer[5] = (temp.time >> 16) & 0xFF;
+  buffer[6] = (temp.time >> 24) & 0xFF;
 }
