@@ -61,10 +61,10 @@ void CampusStudentNode::receivePayload()
 void CampusStudentNode::sendReadingsRequestToSensorNode()
 {
     log(F(": Readings request sent to "), _sensorNode);
-    Node::sendPayload(_sensorNode, READINGS_REQUEST, 0);
+    bool ok = Node::sendPayload(_sensorNode, READINGS_REQUEST, 0);
+    countFailedMessages = ok ? 0 : countFailedMessages + 1;
 }
 
-/// TODO: juntar à de cima para evitar erros dos alunos
 /// @brief Receives the readings from the sensor node.
 /// @return The readings received from the sensor node.
 Sensor_Node CampusStudentNode::receiveReadingsFromSensorNode()
@@ -77,14 +77,27 @@ Sensor_Node CampusStudentNode::receiveReadingsFromSensorNode()
 
         if (header.type == READINGS_REQUEST)
         {
-            Sensor_Node temp;
-            network.read(header, &temp, sizeof(temp));
+            uint8_t buffer[NAME_LENGTH + 4];
+            network.read(header, &buffer, sizeof(buffer));
+            Sensor_Node temp = deserializeSensorNode(buffer);
             log(F(": Sensor readings received from "), header.from_node, F(" - [temp: "), temp.temperature, F("; light: "), temp.phototransistor, F("]"));
             return temp;
         }
         else
             break;
     }
+}
+
+/// @brief Deserializes a buffer into a Sensor_Node.
+/// @param buffer The buffer that is going to be deserialized
+/// @return The Sensor_Node it got from the buffer
+Sensor_Node CampusStudentNode::deserializeSensorNode(uint8_t *buffer)
+{
+    Sensor_Node temp;
+    memcpy(temp.name, buffer, NAME_LENGTH);
+    temp.temperature = buffer[NAME_LENGTH] | (buffer[NAME_LENGTH + 1] << 8);
+    temp.phototransistor = buffer[NAME_LENGTH + 2] | (buffer[NAME_LENGTH + 3] << 8);
+    return temp;
 }
 
 /// @brief Sends an alert request to the sensor node.
@@ -95,16 +108,38 @@ void CampusStudentNode::sendAlertRequestToSensorNode(char type, int value)
     Alert_Request message;
     message.type = type;
     message.value = value;
+    message.time = 0;
+
+    uint8_t buffer[3];
+    serializeAlert(message, buffer);
 
     log(F(": Alert activation sent to "), _sensorNode, F(" - [type: "), type, F("; value: "), value, F("]"));
-    Node::sendPayload(_sensorNode, ALERT_REQUEST, message);
+    bool ok = Node::sendPayload(_sensorNode, ALERT_REQUEST, buffer);
+    countFailedMessages = ok ? 0 : countFailedMessages + 1;
+}
+
+/// @brief Serializes an Alert_Request into a buffer.
+/// @param temp The Alert_Request that is going to be serialized.
+/// @param buffer The buffer it got from the Alert_Request
+void CampusStudentNode::serializeAlert(const Alert_Request &temp, uint8_t *buffer)
+{
+    buffer[0] = temp.type;
+
+    buffer[1] = temp.value & 0xFF;
+    buffer[2] = (temp.value >> 8) & 0xFF;
+
+    buffer[3] = temp.time & 0xFF;
+    buffer[4] = (temp.time >> 8) & 0xFF;
+    buffer[5] = (temp.time >> 16) & 0xFF;
+    buffer[6] = (temp.time >> 24) & 0xFF;
 }
 
 /// @brief Sends an alert deactivation to the sensor node.
 void CampusStudentNode::sendAlertDeactivationToSensorNode()
 {
     log(F(": Alert deactivation sent to "), _sensorNode);
-    Node::sendPayload(_sensorNode, ALERT_DEACTIVATION, 0);
+    bool ok = Node::sendPayload(_sensorNode, ALERT_DEACTIVATION, 0);
+    countFailedMessages = ok ? 0 : countFailedMessages + 1;
 }
 
 /// @brief Receives an alert from the sensor node.
@@ -119,14 +154,27 @@ Alert_Request CampusStudentNode::receiveAlertFromSensorNode()
 
         if (header.type == ALERT_REQUEST)
         {
-            Alert_Request temp;
-            network.read(header, &temp, sizeof(temp));
+            uint8_t buffer[3];
+            network.read(header, &buffer, sizeof(buffer));
+            Alert_Request temp = deserializeAlert(buffer);
             log(F(": Sensor alert received from "), header.from_node, F(" - [type: "), temp.type, F("; value: "), temp.value, F("]"));
             return temp;
         }
         else
             break;
     }
+}
+
+/// @brief Deserializes a buffer into an Alert_Request.
+/// @param buffer The buffer that is going to be deserialized
+/// @return The Alert_Request it got from the buffer
+Alert_Request CampusStudentNode::deserializeAlert(uint8_t *buffer)
+{
+    Alert_Request temp;
+    temp.type = buffer[0];
+    temp.value = buffer[1] | (buffer[2] << 8);
+    temp.time = buffer[3] | (buffer[4] << 8) | (buffer[5] << 16) | (buffer[6] << 24);
+    return temp;
 }
 
 /// @brief Gets the node ID of a node with a specific name.
@@ -137,7 +185,8 @@ uint16_t CampusStudentNode::getNodeID(char *name_pointer)
     char name[NAME_LENGTH];
     strcpy(name, name_pointer);
     // log(F(": ID request sent to "), _sensorNode, F("(with name "), name, F(")"));
-    Node::sendPayload(_sensorNode, ID_REQUEST, name);
+    bool ok = Node::sendPayload(_sensorNode, ID_REQUEST, name);
+    countFailedMessages = ok ? 0 : countFailedMessages + 1;
     receivePayload();
 
     if (nodeID == 0) // If the node ID is not found, return
@@ -158,7 +207,8 @@ void CampusStudentNode::sendKeepAlive(const unsigned long interval)
     { // If it's time to send a message, send it!
         last_sent_keep_alive = now;
         log(F(": Keep alive sent to "), _sensorNode);
-        Node::sendPayload(_sensorNode, KEEP_ALIVE, 0);
+        bool ok = Node::sendPayload(_sensorNode, KEEP_ALIVE, 0);
+        countFailedMessages = ok ? 0 : countFailedMessages + 1;
     }
 }
 
@@ -169,6 +219,7 @@ void CampusStudentNode::restart()
     {
         log(F(": Restarting node connection"));
         _node = NODE_BASE + _sensorNode;
+        countFailedMessages = 0;
         init();
     }
 }

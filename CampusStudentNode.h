@@ -17,7 +17,7 @@ public:
     void sendAlertRequestToSensorNode(char type, int value);
     void sendAlertDeactivationToSensorNode();
     Alert_Request receiveAlertFromSensorNode();
-    uint16_t getNodeID(char* name_pointer);
+    uint16_t getNodeID(char *name_pointer);
 
     /// @brief Override of the sendPayload method to only allow certain message types.
     /// @param to The node ID to send the message to.
@@ -34,7 +34,9 @@ public:
             return false;
         }
 
-        return Node::sendPayload(to, type, payload);
+        bool ok = Node::sendPayload(to, type, payload);
+        countFailedMessages = ok ? 0 : countFailedMessages + 1;
+        return ok;
     }
 
     /// @brief Sends a radio message to a specific node.
@@ -52,10 +54,16 @@ public:
             return;
         }
 
-        getNodeID();
+        char name[NAME_LENGTH];
+        strcpy(name, name_pointer);
+        // log(F(": ID request sent to "), _sensorNode, F("(with name "), name, F(")"));
+        bool ok = Node::sendPayload(_sensorNode, ID_REQUEST, name);
+        countFailedMessages = ok ? 0 : countFailedMessages + 1;
+        receivePayload();
 
         log(F(": Message sent to "), nodeID);
-        Node::sendPayload(nodeID, type, message);
+        ok = Node::sendPayload(nodeID, type, message);
+        countFailedMessages = ok ? 0 : countFailedMessages + 1;
     }
 
 private:
@@ -66,6 +74,9 @@ private:
     uint16_t nodeID = 0;
 
     void sendKeepAlive(const unsigned long interval);
+    Sensor_Node deserializeSensorNode(uint8_t* buffer);
+    void serializeAlert(const Alert_Request &temp, uint8_t *buffer);
+    Alert_Request deserializeAlert(uint8_t* buffer);
     void restart();
 };
 

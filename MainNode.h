@@ -44,10 +44,10 @@ private:
   char *_topic;
 
   void receiveKeepAlive(RF24NetworkHeader &header) override;
-  
   void setupWiFi();
   void setupMQTT();
   void receiveReadings(RF24NetworkHeader &header);
+  Sensor_Node deserializeSensorNode(uint8_t* buffer);
   void receiveBeginFlag(RF24NetworkHeader &header);
   void receiveNodeID(RF24NetworkHeader &header);
   int decimalToOctal(uint16_t octalNumber);

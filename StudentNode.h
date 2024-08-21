@@ -23,7 +23,8 @@ struct Message
 struct Alert_Request
 {
   char type = '\0';
-  int value;
+  int16_t value;
+  long time;
 };
 
 class StudentNode : public Node

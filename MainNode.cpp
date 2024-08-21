@@ -17,10 +17,10 @@ MainNode::MainNode(uint16_t node, int channel)
 void MainNode::init()
 {
   delay(INIT_DELAY); // delay 2-5s to prevent from running the code twice
+  setupRF24Network();
   setupWiFi();
   client.setServer(_server, _port);
   log(F(": Node ID set to "), _node);
-  setupRF24Network();
 }
 
 /// @brief Sets up the WiFi connection.
@@ -114,14 +114,27 @@ void MainNode::receiveKeepAlive(RF24NetworkHeader &header)
 /// @param header  The RF24Network header.
 void MainNode::receiveReadings(RF24NetworkHeader &header)
 {
-  Sensor_Node temp;
-  network.read(header, &temp, sizeof(temp));
+  uint8_t buffer[NAME_LENGTH + 4];
+  network.read(header, &buffer, sizeof(buffer));
+  Sensor_Node temp = deserializeSensorNode(buffer);
 
   network_status[header.from_node - 1].data.temperature = temp.temperature;
   network_status[header.from_node - 1].data.phototransistor = temp.phototransistor;
   strcpy(network_status[header.from_node - 1].data.name, temp.name);
 
   log(F(": Readings received from "), temp.name, F(" - [temp: "), temp.temperature, F("; light: "), temp.phototransistor, F("]"));
+}
+
+/// @brief Deserializes a buffer into a Sensor_Node.
+/// @param buffer The buffer that is going to be deserialized
+/// @return The Sensor_Node it got from the buffer
+Sensor_Node MainNode::deserializeSensorNode(uint8_t *buffer)
+{
+  Sensor_Node temp;
+  memcpy(temp.name, buffer, NAME_LENGTH);
+  temp.temperature = buffer[NAME_LENGTH] | (buffer[NAME_LENGTH + 1] << 8);
+  temp.phototransistor = buffer[NAME_LENGTH + 2] | (buffer[NAME_LENGTH + 3] << 8);
+  return temp;
 }
 
 /// @brief Receives a begin flag from a specific node.

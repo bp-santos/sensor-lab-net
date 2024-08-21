@@ -11,7 +11,6 @@ const int RADIO_CE_PIN = 7;
 const int RADIO_CSN_PIN = 8;
 const int NAME_LENGTH = 7;
 const unsigned long INIT_DELAY = 2000;
-const unsigned long PAYLOAD_SEND_DELAY = 100;
 
 const char READINGS_REQUEST = 'R';
 const char KEEP_ALIVE = 'P';
@@ -37,9 +36,8 @@ public:
     {
         network.update(); // keep the network updated
         RF24NetworkHeader header(to, type);
-        delay(PAYLOAD_SEND_DELAY); // ensure reliable connectivity
         bool ok = network.write(header, &payload, sizeof(payload));
-        Serial.print(ok ? F(" (status = 1)") : F(" (status = 0)"));
+        //Serial.print(ok ? F(" (status = 1)") : F(" (status = 0)"));
         return ok;
     }
 

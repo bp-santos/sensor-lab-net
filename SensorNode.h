@@ -5,7 +5,8 @@
 
 const int MAX_ALERT_PER_STUDENT = 1;
 const unsigned long KEEP_ALIVE_INTERVAL = 3000;
-const long unsigned SENSOR_DATA_UPDATE_INTERVAL = 5000;
+const unsigned long SENSOR_DATA_UPDATE_INTERVAL = 5000;
+const unsigned long NODE_ALERT_CHECK_INTERVAL = 5000;
 
 const char SELF_ID_REQUEST = 'N';
 const char ID_REQUEST = 'I';
@@ -15,7 +16,8 @@ const char ALERT_DEACTIVATION = 'D';
 struct Alert_Request
 {
   char type = '\0';
-  int value;
+  int16_t value;
+  long time;
 };
 
 struct Active_Nodes
@@ -34,7 +36,6 @@ public:
   void init() override;
   void receivePayload() override;
   void checkNodesConnection() override;
-
   void sendKeepAlive();
   void updateSensorValues(int tempPin, int lightPin);
   void generateRandomSensorValues();
@@ -51,7 +52,6 @@ private:
   unsigned long last_sent_keep_alive;
 
   void receiveKeepAlive(RF24NetworkHeader &header) override;
-
   void populateActiveNodesArray();
   int octalToDecimal(uint16_t octalNumber);
   uint16_t receiveNodeIDRequest(RF24NetworkHeader &header);
@@ -59,11 +59,15 @@ private:
   uint16_t receiveNodeIDRequestFromName(RF24NetworkHeader &header);
   void sendNodeID(uint16_t to, uint16_t id);
   void receiveAlertRequest(RF24NetworkHeader &header);
+  Alert_Request deserializeAlert(uint8_t* buffer);
   void receiveAlertDeactivationRequest(RF24NetworkHeader &header);
+  void cleanAlertArray(uint16_t to);
   void receiveReadingsRequest(RF24NetworkHeader &header);
   void sendReadings(uint16_t to);
+  void serializeSensorNode(uint8_t *buffer);
   void sendBeginFlagArray();
   void sendArrayOfActiveNodes();
+  void serializeAlert(const Alert_Request &request, uint8_t *buffer);
 };
 
 #endif
